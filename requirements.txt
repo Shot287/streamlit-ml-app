@@ -1,1 +1,1 @@
-{% extends "base-requirements.jinja" %}
+streamlit
