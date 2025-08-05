@@ -1,68 +1,75 @@
-import os
-from pathlib import Path
-
-import numpy as np
 import streamlit as st
 from PIL import Image
+import os
 
+# --- 設定 ---
+SLIDE_DIR = "slides"
+DEMO_IMG_DIR = "demo_images"
+GRAD_CAM_DIR = "gradcam_images"  # GRAD-CAM画像はここに出力保存しておくと楽
 
-BASE_DIR = Path(__file__).resolve().parent
-IMAGE_DIR = BASE_DIR / "images"
+# --- サイドバー：ページ切替 ---
+page = st.sidebar.radio(
+    "ページ選択",
+    ["スライド資料", "画像分類体験", "GRAD-CAM解説"]
+)
 
-
-@st.cache_resource
-def load_prototypes() -> tuple[np.ndarray, np.ndarray]:
-    """Load prototype images for a tiny nearest-neighbor classifier."""
-    cat = Image.open(IMAGE_DIR / "cat.jpg").resize((224, 224))
-    dog = Image.open(IMAGE_DIR / "dog.jpg").resize((224, 224))
-    return np.array(cat, dtype=np.float32), np.array(dog, dtype=np.float32)
-
-
-def classify_image(img: Image.Image) -> tuple[str, str]:
-    """Return label (猫/犬/その他) and explanation."""
-    cat_proto, dog_proto = load_prototypes()
-
-    arr = np.array(img.resize((224, 224)), dtype=np.float32)
-
-    cat_dist = float(np.mean((arr - cat_proto) ** 2))
-    dog_dist = float(np.mean((arr - dog_proto) ** 2))
-
-    threshold = 4000.0
-
-    if min(cat_dist, dog_dist) > threshold:
-        label = "その他"
-        explanation = "猫・犬のどちらにも似ていませんでした。"
-    elif cat_dist < dog_dist:
-        label = "猫"
-        explanation = "猫画像との距離が犬画像より小さかったため猫と判断しました。"
+# --- 1. スライド資料ページ ---
+if page == "スライド資料":
+    slide_files = sorted([
+        f for f in os.listdir(SLIDE_DIR)
+        if f.lower().endswith((".png", ".jpg", ".jpeg"))
+    ])
+    if not slide_files:
+        st.error("スライド画像がありません。slides フォルダに画像を追加してください。")
     else:
-        label = "犬"
-        explanation = "犬画像との距離が猫画像より小さかったため犬と判断しました。"
+        slide_num = st.slider("スライド番号", 1, len(slide_files), 1)
+        slide_path = os.path.join(SLIDE_DIR, slide_files[slide_num-1])
+        st.image(slide_path, use_column_width=True)
+        st.caption(f"{slide_num}/{len(slide_files)}")
 
-    return label, explanation
+# --- 2. 画像分類体験ページ ---
+elif page == "画像分類体験":
+    st.header("画像分類を体験しよう！")
+    st.write("高校生に画像を選んでもらい、AIの予測を確認します。")
+    demo_imgs = sorted([
+        f for f in os.listdir(DEMO_IMG_DIR)
+        if f.lower().endswith((".png", ".jpg", ".jpeg"))
+    ])
+    if not demo_imgs:
+        st.error("デモ画像がありません。demo_images フォルダに画像を追加してください。")
+    else:
+        # 画像選択
+        img_choice = st.selectbox("画像を選んでください", demo_imgs)
+        img_path = os.path.join(DEMO_IMG_DIR, img_choice)
+        st.image(img_path, caption="選択画像", width=300)
 
+        # --- ★ここに推論ロジックを組み込む（ダミー実装）---
+        # 実際はここでAIモデルをロードして推論
+        import random
+        possible_classes = ["猫", "犬", "鳥"]
+        pred_class = random.choice(possible_classes)  # ダミー: ランダム予測
+        st.success(f"AIの予測結果: **{pred_class}**")
 
-# Grad-CAM functionality was removed to keep the app lightweight and
-# avoid heavy TensorFlow dependencies.
+        # 推論結果の理由や根拠はGRAD-CAMページで！
 
+# --- 3. GRAD-CAM解説ページ ---
+elif page == "GRAD-CAM解説":
+    st.header("AIの判断根拠を見てみよう！（GRAD-CAM）")
+    st.write("AIが画像のどこを見て判断したのか、色で可視化します。")
+    gradcam_imgs = sorted([
+        f for f in os.listdir(GRAD_CAM_DIR)
+        if f.lower().endswith((".png", ".jpg", ".jpeg"))
+    ])
+    if not gradcam_imgs:
+        st.warning("GRAD-CAM画像がありません。gradcam_images フォルダに画像を追加してください。")
+        st.info("実際には、画像分類体験で使った画像＋推論クラスごとにGRAD-CAM画像を用意し、ここで表示します。")
+    else:
+        gradcam_choice = st.selectbox("GRAD-CAM画像を選んでください", gradcam_imgs)
+        gradcam_path = os.path.join(GRAD_CAM_DIR, gradcam_choice)
+        st.image(gradcam_path, caption="GRAD-CAM可視化", use_column_width=True)
+        st.caption("赤い部分ほどAIが重視した領域です。人間の着目点と比べてみましょう。")
 
-if __name__ == "__main__":
-    # UI
-    st.title("画像分類デモ")
-    st.write("画像を選択すると、猫か犬かを判定します。")
+# --- 備考 ---
+st.sidebar.markdown("---")
+st.sidebar.write("©️ 2025 機械学習体験アプリ")
 
-    image_files = [
-        p.name
-        for p in IMAGE_DIR.iterdir()
-        if p.suffix.lower() in {".jpg", ".png", ".jpeg"}
-    ]
-
-    selected = st.selectbox("画像を選択してください", image_files)
-
-    if selected:
-        img = Image.open(IMAGE_DIR / selected)
-        st.image(img, caption=selected, use_column_width=True)
-
-        label, explanation = classify_image(img)
-        st.subheader(f"判定: {label}")
-        st.write(explanation)
