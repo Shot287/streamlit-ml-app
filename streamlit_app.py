@@ -1,15 +1,20 @@
 import os
+from pathlib import Path
 
 import numpy as np
 import streamlit as st
 from PIL import Image
 
 
+BASE_DIR = Path(__file__).resolve().parent
+IMAGE_DIR = BASE_DIR / "images"
+
+
 @st.cache_resource
 def load_prototypes() -> tuple[np.ndarray, np.ndarray]:
     """Load prototype images for a tiny nearest-neighbor classifier."""
-    cat = Image.open(os.path.join("images", "cat.jpg")).resize((224, 224))
-    dog = Image.open(os.path.join("images", "dog.jpg")).resize((224, 224))
+    cat = Image.open(IMAGE_DIR / "cat.jpg").resize((224, 224))
+    dog = Image.open(IMAGE_DIR / "dog.jpg").resize((224, 224))
     return np.array(cat, dtype=np.float32), np.array(dog, dtype=np.float32)
 
 
@@ -46,14 +51,16 @@ if __name__ == "__main__":
     st.title("画像分類デモ")
     st.write("画像を選択すると、猫か犬かを判定します。")
 
-    image_dir = "images"
-    image_files = [f for f in os.listdir(image_dir) if f.lower().endswith((".jpg", ".png", ".jpeg"))]
+    image_files = [
+        p.name
+        for p in IMAGE_DIR.iterdir()
+        if p.suffix.lower() in {".jpg", ".png", ".jpeg"}
+    ]
 
     selected = st.selectbox("画像を選択してください", image_files)
 
     if selected:
-        path = os.path.join(image_dir, selected)
-        img = Image.open(path)
+        img = Image.open(IMAGE_DIR / selected)
         st.image(img, caption=selected, use_column_width=True)
 
         label, explanation = classify_image(img)
