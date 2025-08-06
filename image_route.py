@@ -1,5 +1,8 @@
-import streamlit as st
-import os
+$1
+if "selected_img" not in st.session_state:
+    st.session_state.selected_img = None
+if "img_index" not in st.session_state:
+    st.session_state.img_index = 0
 
 os.makedirs("demo_images", exist_ok=True)
 

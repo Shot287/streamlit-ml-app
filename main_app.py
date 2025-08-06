@@ -20,3 +20,5 @@ elif st.session_state.page.startswith("自然言語処理"):
     nlp_pages()
 elif st.session_state.page.startswith("画像分類"):
     image_pages()
+else:
+    st.write(f"ページが見つかりません: {st.session_state.page}")
