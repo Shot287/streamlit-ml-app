@@ -101,7 +101,6 @@ elif st.session_state.page == "犬の画像分類":
         if f.lower().endswith((".png", ".jpg", ".jpeg"))
     ])[:6]
     cols = st.columns(3)
-    rerun_triggered = False
     for i in range(6):
         col = cols[i % 3]
         with col:
@@ -111,8 +110,8 @@ elif st.session_state.page == "犬の画像分類":
                     st.session_state.selected_img = img_path
                     st.session_state.img_index = i
                     st.session_state.anim_done = False
-                    st.session_state.page = "画像分類アニメ"  # ページを直接セット
-                    st.experimental_rerun()  # ← 必ず即時遷移！
+                    st.session_state.page = "画像分類アニメ"
+                    st.experimental_rerun()  # ← ココが絶対に必要！
                 st.image(img_path, caption=f"犬の画像{i+1}", use_column_width=True)
             else:
                 st.markdown(
