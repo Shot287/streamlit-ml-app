@@ -35,18 +35,23 @@ def image_pages():
         for i in range(6):
             col = cols[i % 3]
             with col:
+                btn_label = f"画像{i+1}"
+                btn_key = f"img_btn_{i}_2_2"
                 if i < len(demo_imgs):
                     img_path = os.path.join("demo_images", demo_imgs[i])
-                    if st.button(f"画像{i+1}", key=f"img_btn_{i}_2_2"):
+                    if st.button(btn_label, key=btn_key):
                         clicked_index = i
                         st.session_state.selected_img = img_path
                     st.image(img_path, caption=f"犬の画像{i+1}", use_column_width=True)
                 else:
                     st.markdown(
-                        "<div style='border:2px dashed #bbb; width:100%; height:160px; display:flex; align-items:center; justify-content:center; margin-bottom:8px;'><span style='color:#bbb;'>画像をここに追加</span></div>",
+                        "<div style='border:2px dashed #bbb; width:100%; height:160px; "
+                        "display:flex; align-items:center; justify-content:center; margin-bottom:8px;'>"
+                        "<span style='color:#bbb;'>画像をここに追加</span></div>",
                         unsafe_allow_html=True
                     )
-                    if st.button(f"画像{i+1}", key=f"dummy_btn_{i}_2_2"):
+                    # ダミーボタンでもページ遷移
+                    if st.button(btn_label, key=btn_key):
                         clicked_index = i
                         st.session_state.selected_img = None
         # forループ外で「どれか押された」場合のみページ遷移
@@ -60,6 +65,9 @@ def image_pages():
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
 
     elif st.session_state.page == "画像分類アニメ":
-        pass  # 今は真っ白
+        # 今は真っ白なページ
+        st.button("前のページへ戻る", on_click=go_to, args=("犬の画像分類",))
+        st.markdown("<div style='text-align:center;'>2-3</div>", unsafe_allow_html=True)
+
     elif st.session_state.page == "画像分類結果":
         pass
