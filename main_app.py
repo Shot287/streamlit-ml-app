@@ -18,7 +18,9 @@ if st.session_state.page == "タイトル":
 # --- 各ルートへ分岐 ---
 elif st.session_state.page.startswith("自然言語処理"):
     nlp_pages()
-elif st.session_state.page.startswith("画像分類"):
+elif st.session_state.page.startswith("画像分類") or st.session_state.page in [
+    "犬の画像分類", "画像分類アニメ", "画像分類結果"
+]:
     image_pages()
 else:
     st.write(f"ページが見つかりません: {st.session_state.page}")

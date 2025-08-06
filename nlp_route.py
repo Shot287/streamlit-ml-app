@@ -28,4 +28,3 @@ def nlp_pages():
         st.button("前のページへ戻る", on_click=go_to, args=("自然言語処理体験",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>1-3</div>", unsafe_allow_html=True)
-
