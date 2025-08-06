@@ -5,6 +5,8 @@ if "selected_img" not in st.session_state:
     st.session_state.selected_img = None
 if "img_index" not in st.session_state:
     st.session_state.img_index = 0
+if "goto_img_anime" not in st.session_state:
+    st.session_state.goto_img_anime = False
 
 os.makedirs("demo_images", exist_ok=True)
 
@@ -31,7 +33,6 @@ def image_pages():
             if f.lower().endswith((".png", ".jpg", ".jpeg"))
         ])[:6]
         cols = st.columns(3)
-        clicked_index = None
         for i in range(6):
             col = cols[i % 3]
             with col:
@@ -40,9 +41,9 @@ def image_pages():
                 if i < len(demo_imgs):
                     img_path = os.path.join("demo_images", demo_imgs[i])
                     if st.button(btn_label, key=btn_key):
-                        clicked_index = i
                         st.session_state.selected_img = img_path
-                    st.image(img_path, caption=f"犬の画像{i+1}", use_column_width=True)
+                        st.session_state.img_index = i
+                        st.session_state.goto_img_anime = True
                 else:
                     st.markdown(
                         "<div style='border:2px dashed #bbb; width:100%; height:160px; "
@@ -50,13 +51,13 @@ def image_pages():
                         "<span style='color:#bbb;'>画像をここに追加</span></div>",
                         unsafe_allow_html=True
                     )
-                    # ダミーボタンでもページ遷移
                     if st.button(btn_label, key=btn_key):
-                        clicked_index = i
                         st.session_state.selected_img = None
-        # forループ外で「どれか押された」場合のみページ遷移
-        if clicked_index is not None:
-            st.session_state.img_index = clicked_index
+                        st.session_state.img_index = i
+                        st.session_state.goto_img_anime = True
+        # forループ外で「ボタン押されたら」ページ遷移＋rerun
+        if st.session_state.get("goto_img_anime", False):
+            st.session_state.goto_img_anime = False  # フラグリセット
             st.session_state.page = "画像分類アニメ"
             st.experimental_rerun()
 
@@ -65,7 +66,6 @@ def image_pages():
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
 
     elif st.session_state.page == "画像分類アニメ":
-        # 今は真っ白なページ
         st.button("前のページへ戻る", on_click=go_to, args=("犬の画像分類",))
         st.markdown("<div style='text-align:center;'>2-3</div>", unsafe_allow_html=True)
 
