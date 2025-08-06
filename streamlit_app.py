@@ -6,15 +6,15 @@ os.makedirs("demo_images", exist_ok=True)
 
 # --- ページ名定義 ---
 PAGES = [
-    "タイトル",              # -
-    "自然言語処理イントロ",   # 1-1
-    "自然言語処理体験",       # 1-2
-    "自然言語処理まとめ",     # 1-3（必要に応じて）
-    "画像分類イントロ",       # 2-1
-    "犬の画像分類",           # 2-2
-    "画像分類まとめ",         # 2-3（必要に応じて）
-    "GRAD-CAM解説",          # おまけ
-    "スライド資料",           # おまけ
+    "タイトル",                # -
+    "自然言語処理イントロ",     # 1-1
+    "自然言語処理体験",         # 1-2
+    "自然言語処理まとめ",       # 1-3（必要なら）
+    "画像分類イントロ",         # 2-1
+    "犬の画像分類",             # 2-2
+    "画像分類まとめ",           # 2-3（必要なら）
+    "GRAD-CAM解説",            # おまけ
+    "スライド資料",             # おまけ
 ]
 
 # --- 初期化 ---
@@ -63,6 +63,14 @@ elif st.session_state.page == "自然言語処理体験":
     st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
     st.markdown("<div style='text-align:center;'>1-2</div>", unsafe_allow_html=True)
 
+# --- 自然言語処理まとめページ（1-3・必要なら）---
+elif st.session_state.page == "自然言語処理まとめ":
+    st.header("自然言語処理まとめ")
+    st.write("（まとめ・ふりかえりページ。必要なら追加してください）")
+    st.button("前のページへ戻る", on_click=go_to, args=("自然言語処理体験",))
+    st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
+    st.markdown("<div style='text-align:center;'>1-3</div>", unsafe_allow_html=True)
+
 # --- 画像分類イントロページ（2-1）---
 elif st.session_state.page == "画像分類イントロ":
     st.header("画像分類とは？")
@@ -80,25 +88,66 @@ elif st.session_state.page == "画像分類イントロ":
 # --- 犬の画像分類体験ページ（2-2）---
 elif st.session_state.page == "犬の画像分類":
     st.header("犬の画像分類を体験しよう！")
-    st.write("好きな犬の画像を選び、AIの予測を見てみましょう。")
+    st.write("下の6枚から好きな犬の画像を選んで、AIの予測を見てみましょう。")
+    
+    # demo_images フォルダ内の画像ファイル一覧（最大6枚まで表示）
     demo_imgs = sorted([
         f for f in os.listdir("demo_images")
         if f.lower().endswith((".png", ".jpg", ".jpeg"))
-    ])
-    if not demo_imgs:
-        st.error("デモ画像がありません。demo_images フォルダに画像を追加してください。")
-    else:
-        img_choice = st.selectbox("画像を選んでください", demo_imgs)
-        img_path = os.path.join("demo_images", img_choice)
-        st.image(img_path, caption="選択画像", width=300)
+    ])[:6]
+    
+    # 画像・枠表示部分
+    cols = st.columns(3)
+    selected = None
+
+    for i in range(6):
+        col = cols[i % 3]
+        with col:
+            if i < len(demo_imgs):
+                img_path = os.path.join("demo_images", demo_imgs[i])
+                if st.button(f"画像{i+1}", key=f"img_btn_{i}"):
+                    selected = img_path
+                st.image(img_path, caption=f"犬の画像{i+1}", use_column_width=True)
+            else:
+                st.markdown(
+                    f"""
+                    <div style="border:2px dashed #bbb; width:100%; height:160px; display:flex; align-items:center; justify-content:center; margin-bottom:8px;">
+                        <span style="color:#bbb;">画像をここに追加</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                st.button(f"画像{i+1}", key=f"dummy_btn_{i}")
+
+    # 選択されたらAI予測（ダミー）
+    if selected:
         import random
-        possible_classes = ["柴犬", "ダックスフント", "プードル", "チワワ"]
+        possible_classes = ["柴犬", "ダックスフント", "プードル", "チワワ", "ポメラニアン", "ビーグル"]
         pred_class = random.choice(possible_classes)
         st.success(f"AIの予測結果: **{pred_class}**")
         st.info("推論の根拠は『GRAD-CAM解説』ページで見てみよう。")
+
     st.button("前のページへ戻る", on_click=go_to, args=("画像分類イントロ",))
     st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
     st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
 
-# --- 必要に応じて 2-3, 1-3 など拡張も可能 ---
-# --- GRAD-CAM解説・スライド資料ページは省略（従来通り） ---
+# --- 画像分類まとめページ（2-3・必要なら）---
+elif st.session_state.page == "画像分類まとめ":
+    st.header("画像分類まとめ")
+    st.write("（まとめ・ふりかえりページ。必要なら追加してください）")
+    st.button("前のページへ戻る", on_click=go_to, args=("犬の画像分類",))
+    st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
+    st.markdown("<div style='text-align:center;'>2-3</div>", unsafe_allow_html=True)
+
+# --- GRAD-CAM解説ページ（おまけ）---
+elif st.session_state.page == "GRAD-CAM解説":
+    st.header("AIの判断根拠を見てみよう！（GRAD-CAM）")
+    st.write("AIが画像のどこを見て判断したのか、色で可視化します。")
+    st.write("（ここにGRAD-CAMの画像や解説を実装できます）")
+    st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
+
+# --- スライド資料ページ（おまけ）---
+elif st.session_state.page == "スライド資料":
+    st.header("スライド資料")
+    st.write("（ここにスライド資料の内容を実装できます）")
+    st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
