@@ -25,25 +25,20 @@ def image_pages():
 
     elif st.session_state.page == "犬の画像分類":
         st.header("犬の画像分類を体験しよう！")
-        st.write("下の6枚から好きな画像を選ぼう！")
+        st.write("下の6枚から好きな画像を選び、「決定」ボタンを押してください。")
         demo_imgs = sorted([
             f for f in os.listdir("demo_images")
             if f.lower().endswith((".png", ".jpg", ".jpeg"))
         ])[:6]
+        options = [f"画像{i+1}" for i in range(6)]
+        selected = st.radio("画像を選んでください", options, index=0)
+
         cols = st.columns(3)
         for i in range(6):
             col = cols[i % 3]
             with col:
-                btn_label = f"画像{i+1}"
-                btn_key = f"img_btn_{i}_2_2"
-                img_path = os.path.join("demo_images", demo_imgs[i]) if i < len(demo_imgs) else None
-                # ボタンを押したときのみ2-3ページ（画像分類アニメ）に切り替える
-                if st.button(btn_label, key=btn_key):
-                    st.session_state.selected_img = img_path
-                    st.session_state.img_index = i
-                    st.session_state.page = "画像分類アニメ"
-                    st.experimental_rerun()  # ← ここで即時ページ切り替え
-                if img_path:
+                if i < len(demo_imgs):
+                    img_path = os.path.join("demo_images", demo_imgs[i])
                     st.image(img_path, caption=f"犬の画像{i+1}", use_column_width=True)
                 else:
                     st.markdown(
@@ -52,6 +47,13 @@ def image_pages():
                         "<span style='color:#bbb;'>画像をここに追加</span></div>",
                         unsafe_allow_html=True
                     )
+        if st.button("決定"):
+            i = options.index(selected)
+            img_path = os.path.join("demo_images", demo_imgs[i]) if i < len(demo_imgs) else None
+            st.session_state.selected_img = img_path
+            st.session_state.img_index = i
+            st.session_state.page = "画像分類アニメ"
+            st.experimental_rerun()
         st.button("前のページへ戻る", on_click=go_to, args=("画像分類イントロ",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
