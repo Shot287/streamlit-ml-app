@@ -31,7 +31,13 @@ def image_pages():
             if f.lower().endswith((".png", ".jpg", ".jpeg"))
         ])[:6]
         options = [f"画像{i+1}" for i in range(6)]
-        selected = st.radio("画像を選んでください", options, index=0)
+        # 選択状態はセッションで管理（再描画時に選択が外れないようにする）
+        if "selected_radio" not in st.session_state:
+            st.session_state.selected_radio = options[0]
+        selected = st.radio("画像を選んでください", options, 
+                            index=options.index(st.session_state.selected_radio),
+                            key="radio_select")
+        st.session_state.selected_radio = selected
 
         cols = st.columns(3)
         for i in range(6):
@@ -47,8 +53,9 @@ def image_pages():
                         "<span style='color:#bbb;'>画像をここに追加</span></div>",
                         unsafe_allow_html=True
                     )
+        # 「決定」ボタンでのみ遷移
         if st.button("決定"):
-            i = options.index(selected)
+            i = options.index(st.session_state.selected_radio)
             img_path = os.path.join("demo_images", demo_imgs[i]) if i < len(demo_imgs) else None
             st.session_state.selected_img = img_path
             st.session_state.img_index = i
