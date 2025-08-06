@@ -31,21 +31,17 @@ def image_pages():
             if f.lower().endswith((".png", ".jpg", ".jpeg"))
         ])[:6]
         cols = st.columns(3)
+        clicked = None
+        clicked_img = None
         for i in range(6):
             col = cols[i % 3]
             with col:
                 btn_label = f"画像{i+1}"
                 btn_key = f"img_btn_{i}_2_2"
-                img_path = None
-                if i < len(demo_imgs):
-                    img_path = os.path.join("demo_images", demo_imgs[i])
+                img_path = os.path.join("demo_images", demo_imgs[i]) if i < len(demo_imgs) else None
                 if st.button(btn_label, key=btn_key):
-                    st.session_state.selected_img = img_path
-                    st.session_state.img_index = i
-                    st.session_state.page = "画像分類アニメ"
-                    st.experimental_rerun()
-                    return  # ← rerun後の多重実行を確実に防止
-                # 枠・画像表示（どちらも必ず出る）
+                    clicked = i
+                    clicked_img = img_path
                 if img_path:
                     st.image(img_path, caption=f"犬の画像{i+1}", use_column_width=True)
                 else:
@@ -55,6 +51,14 @@ def image_pages():
                         "<span style='color:#bbb;'>画像をここに追加</span></div>",
                         unsafe_allow_html=True
                     )
+        # forループ外でボタン判定＆ワンクリックでページ遷移
+        if clicked is not None:
+            st.session_state.selected_img = clicked_img
+            st.session_state.img_index = clicked
+            st.session_state.page = "画像分類アニメ"
+            st.experimental_rerun()
+            return
+
         st.button("前のページへ戻る", on_click=go_to, args=("画像分類イントロ",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
