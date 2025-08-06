@@ -49,6 +49,7 @@ def image_pages():
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
 
+
     # 2-3
     elif st.session_state.page == "画像分類アニメ":
         st.header("画像を受け取りました！")
