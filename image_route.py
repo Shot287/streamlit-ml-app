@@ -26,6 +26,13 @@ def image_pages():
         st.markdown("<div style='text-align:center;'>2-1</div>", unsafe_allow_html=True)
 
     elif st.session_state.page == "犬の画像分類":
+        # もし前回ボタン押下直後なら、ここで一度だけページ遷移してrerun
+        if st.session_state.goto_img_anime:
+            st.session_state.goto_img_anime = False
+            st.session_state.page = "画像分類アニメ"
+            st.experimental_rerun()
+            return  # rerun後に再実行されるのでこれで十分
+
         st.header("犬の画像分類を体験しよう！")
         st.write("下の6枚から好きな画像を選ぼう！")
         demo_imgs = sorted([
@@ -44,6 +51,7 @@ def image_pages():
                         st.session_state.selected_img = img_path
                         st.session_state.img_index = i
                         st.session_state.goto_img_anime = True
+                        st.experimental_rerun()
                 else:
                     st.markdown(
                         "<div style='border:2px dashed #bbb; width:100%; height:160px; "
@@ -55,12 +63,7 @@ def image_pages():
                         st.session_state.selected_img = None
                         st.session_state.img_index = i
                         st.session_state.goto_img_anime = True
-        # forループ外で「ボタン押されたら」ページ遷移＋rerun
-        if st.session_state.get("goto_img_anime", False):
-            st.session_state.goto_img_anime = False  # フラグリセット
-            st.session_state.page = "画像分類アニメ"
-            st.experimental_rerun()
-
+                        st.experimental_rerun()
         st.button("前のページへ戻る", on_click=go_to, args=("画像分類イントロ",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
