@@ -1,4 +1,5 @@
-$1
+import streamlit as st
+import os
 if "selected_img" not in st.session_state:
     st.session_state.selected_img = None
 if "img_index" not in st.session_state:
