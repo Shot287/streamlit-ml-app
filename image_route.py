@@ -12,7 +12,6 @@ def go_to(page):
     st.session_state.page = page
 
 def image_pages():
-    # 2-1
     if st.session_state.page == "画像分類イントロ":
         st.header("画像分類とは？")
         st.write("""
@@ -24,7 +23,6 @@ def image_pages():
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-1</div>", unsafe_allow_html=True)
 
-    # 2-2 画像選択ページ
     elif st.session_state.page == "犬の画像分類":
         st.header("犬の画像分類を体験しよう！")
         st.write("下の6枚から好きな画像を選ぼう！")
@@ -33,31 +31,35 @@ def image_pages():
             if f.lower().endswith((".png", ".jpg", ".jpeg"))
         ])[:6]
         cols = st.columns(3)
+        clicked_index = None
         for i in range(6):
             col = cols[i % 3]
             with col:
                 if i < len(demo_imgs):
                     img_path = os.path.join("demo_images", demo_imgs[i])
-                    if st.button(f"画像{i+1}", key=f"img_btn_{i}"):
+                    if st.button(f"画像{i+1}", key=f"img_btn_{i}_2_2"):
+                        clicked_index = i
                         st.session_state.selected_img = img_path
-                        st.session_state.img_index = i
-                        st.session_state.page = "画像分類アニメ"
-                        st.experimental_rerun()
                     st.image(img_path, caption=f"犬の画像{i+1}", use_column_width=True)
                 else:
                     st.markdown(
                         "<div style='border:2px dashed #bbb; width:100%; height:160px; display:flex; align-items:center; justify-content:center; margin-bottom:8px;'><span style='color:#bbb;'>画像をここに追加</span></div>",
                         unsafe_allow_html=True
                     )
-                    st.button(f"画像{i+1}", key=f"dummy_btn_{i}")
+                    if st.button(f"画像{i+1}", key=f"dummy_btn_{i}_2_2"):
+                        clicked_index = i
+                        st.session_state.selected_img = None
+        # forループ外で「どれか押された」場合のみページ遷移
+        if clicked_index is not None:
+            st.session_state.img_index = clicked_index
+            st.session_state.page = "画像分類アニメ"
+            st.experimental_rerun()
+
         st.button("前のページへ戻る", on_click=go_to, args=("画像分類イントロ",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
 
-    # 2-3 画像分類アニメ（今は真っ白）
     elif st.session_state.page == "画像分類アニメ":
-        pass  # 何も表示しない（真っ白な画面）
-
-    # 2-4 結果ページ（未使用、今は不要なので空でもOK）
+        pass  # 今は真っ白
     elif st.session_state.page == "画像分類結果":
         pass
