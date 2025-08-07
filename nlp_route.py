@@ -74,6 +74,18 @@ def nlp_pages():
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>1-2</div>", unsafe_allow_html=True)
 
+    # ▼▼▼ 変更点 ▼▼▼
+    # 「まとめ」のブロックをforループの前に移動
+    # 1-4: 自然言語処理まとめ
+    elif st.session_state.page == "自然言語処理まとめ":
+        st.header("自然言語処理まとめ")
+        st.success("体験お疲れ様でした！")
+        st.write("（まとめページの内容）")
+        st.button("もう一度体験する", on_click=go_to, args=("自然言語処理体験",))
+        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
+        st.markdown("<div style='text-align:center;'>1-4</div>", unsafe_allow_html=True)
+    # ▲▲▲ 変更点ここまで ▲▲▲
+
     # 1-3: 各結果ページの生成
     for i in range(1, 7):
         page_name = f"自然言語処理結果_{i}"
@@ -85,12 +97,3 @@ def nlp_pages():
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
             st.markdown(f"<div style='text-align:center;'>1-3-{i}</div>", unsafe_allow_html=True)
             return
-
-    # 1-4: 自然言語処理まとめ
-    elif st.session_state.page == "自然言語処理まとめ":
-        st.header("自然言語処理まとめ")
-        st.success("体験お疲れ様でした！")
-        st.write("（まとめページの内容）")
-        st.button("もう一度体験する", on_click=go_to, args=("自然言語処理体験",))
-        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
-        st.markdown("<div style='text-align:center;'>1-4</div>", unsafe_allow_html=True)
