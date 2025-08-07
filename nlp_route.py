@@ -111,28 +111,24 @@ def nlp_pages():
         if st.session_state.page == page_name:
             st.header(f"質問{i}の「裏側」解説")
             
-            # ▼▼▼ ここからがメインの修正箇所 ▼▼▼
             st.subheader("AIの回答（再掲）")
             st.info(answers[i-1])
             st.divider()
 
-            # 「裏側」解説用の画像パスを定義
             backside_image_paths = [
                 "backside_1.png", "backside_2.png", "backside_3.png",
                 "backside_4.png", "backside_5.png", "backside_6.png"
             ]
             path = backside_image_paths[i-1]
 
-            # --- デバッグ情報 ---
-            current_directory = os.getcwd()
-            st.warning(f"現在、プログラムは以下のフォルダ内を探しています:\n\n`{current_directory}`")
-            # --- デバッグ情報ここまで ---
+            # ▼▼▼ 変更点 ▼▼▼
+            # デバッグ情報を削除
+            # ▲▲▲ 変更点ここまで ▲▲▲
 
-            # 対応する画像を表示
             if os.path.exists(path):
                 st.image(path, caption="解説画像", use_container_width=True)
             else:
-                st.error(f"エラー: 上記フォルダ内に解説画像 '{path}' が見つかりません。")
+                st.error(f"エラー: 解説画像 '{path}' が見つかりません。")
             
             st.divider()
             st.button("◀ 回答に戻る", on_click=go_to, args=(f"自然言語処理結果_{i}",))
