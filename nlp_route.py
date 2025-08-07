@@ -2,21 +2,23 @@ import streamlit as st
 import time
 
 # --- セッション管理の初期化 ---
-# NLP体験ページの進行状況を管理する変数 (selection, animation, show_button, display_answer)
 if "nlp_stage" not in st.session_state:
     st.session_state.nlp_stage = "selection"
-# 選択された質問を保存する変数
 if "selected_nlp_question" not in st.session_state:
     st.session_state.selected_nlp_question = ""
 
 def go_to(page):
-    # 他のページに移動する際に進行状況をリセット
     st.session_state.nlp_stage = "selection"
     st.session_state.selected_nlp_question = ""
     st.session_state.page = page
 
 def nlp_pages():
-    # 1-1: 自然言語処理イントロ (変更なし)
+    # ▼▼▼ 目印 ▼▼▼
+    # この文字がアプリに表示されれば、ファイル更新は成功です。
+    st.title("★ファイル更新テスト★")
+    # ▲▲▲ 目印 ▲▲▲
+
+    # 1-1: 自然言語処理イントロ
     if st.session_state.page == "自然言語処理イントロ":
         st.header("自然言語処理とは？")
         st.write("""
@@ -32,56 +34,42 @@ def nlp_pages():
     elif st.session_state.page == "自然言語処理体験":
         st.header("AIアシスタントへの質問")
 
-        # 質問の選択肢（一語一句同じ）
         questions = [
             "最近、AI技術がどのように私たちの日常生活を変えているのか、具体的な例を交えて教えてください。",
             "AIと人間の違いやAIの強みについて、わかりやすく説明してください。",
             "AIにできること、できないことについて、具体例を交えて説明してください。",
             "AIに質問するとき、どんな聞き方をすると正確で分かりやすい答えが返ってきやすいですか？",
             "AIはどうやって人間の言葉を理解しているのか、その仕組みをできるだけ詳しく説明してください。",
-            "AIはどうやって人間の言葉を理解しているのか、その仕組みをできるだけ詳しく説明してください。 " # 末尾に半角スペースを追加して別の選択肢として認識させる
+            "AIはどうやって人間の言葉を理解しているのか、その仕組みをできるだけ詳しく説明してください。 "
         ]
 
-        # --- ステージ1: 質問選択 ---
         if st.session_state.nlp_stage == "selection":
             st.write("こんにちは！ 私はAIアシスタントです。AIや言葉について、どんなことに興味がありますか？下のリストから質問を選んでください。")
-            
             selected = st.radio("質問リスト:", questions, label_visibility="collapsed")
-
             def decide_button_clicked():
                 st.session_state.selected_nlp_question = selected
                 st.session_state.nlp_stage = "animation"
-            
             st.button("決定", on_click=decide_button_clicked)
 
-        # --- ステージ2: アニメーション ---
         elif st.session_state.nlp_stage == "animation":
             st.info(f"**質問:**\n\n{st.session_state.selected_nlp_question}")
             st.write("---")
-            
             with st.spinner("AIが回答を考えています..."):
                 time.sleep(2)
-            
             st.session_state.nlp_stage = "show_button"
             st.experimental_rerun()
 
-        # --- ステージ3: 結果表示ボタン ---
         elif st.session_state.nlp_stage == "show_button":
             st.info(f"**質問:**\n\n{st.session_state.selected_nlp_question}")
             st.write("---")
             st.success("回答の準備ができました！")
-
             def show_result_button_clicked():
                 st.session_state.nlp_stage = "display_answer"
-            
             st.button("結果を見る", on_click=show_result_button_clicked)
 
-        # --- ステージ4: 回答表示 ---
         elif st.session_state.nlp_stage == "display_answer":
             st.info(f"**質問:**\n\n{st.session_state.selected_nlp_question}")
             st.write("---")
-
-            # 質問に対応する回答を定義
             answers = {
                 questions[0]: "例えば、スマートフォンの音声アシスタントや、動画サイトのおすすめ機能、お店の自動翻訳機など、多くの場所でAI技術が使われ、私たちの生活を便利にしています。",
                 questions[1]: "人間は感情や経験から柔軟に考えられますが、AIは大量のデータを正確に高速で処理するのが得意です。疲れを知らない点もAIの強みと言えます。",
@@ -90,8 +78,6 @@ def nlp_pages():
                 questions[4]: "AIは、たくさんの文章データを読んで、「この単語の後にはこの単語が来やすい」といった言葉のパターンを統計的に学習します。それによって、文の意味を予測したり、文章を生成したりしています。",
                 questions[5]: "より詳しく言うと、AIは単語を「ベクトル」という数字の集まりに変換します。似た意味の単語は近い数字のベクトルになり、AIはこの数字の関係性から文全体の意味を計算します。この技術を「単語埋め込み」と呼び、自然言語処理の基礎となっています。"
             }
-
-            # 回答を表示
             st.success("回答:")
             st.info(answers.get(st.session_state.selected_nlp_question, "エラー：回答が見つかりません。"))
 
