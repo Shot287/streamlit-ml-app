@@ -83,7 +83,7 @@ def image_pages():
         for page_num in range(1, 6):
             page_name = f"画像分類結果_{choice_idx}_{page_num}"
             if st.session_state.page == page_name:
-                st.header(f"分析結果：画像 {choice_idx} ({page_num}/5)")
+                st.header(f"分析結果：{choice_idx} ({page_num}/5)")
                 result_image_path = f"result_{choice_idx}_{page_num}.png"
 
                 if os.path.exists(result_image_path):
