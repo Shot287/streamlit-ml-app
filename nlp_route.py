@@ -2,7 +2,6 @@ import streamlit as st
 import time
 
 # --- セッション管理の初期化 ---
-# 進行状況と選択された質問を管理
 if "nlp_stage" not in st.session_state:
     st.session_state.nlp_stage = "selection"
 if "selected_nlp_question_index" not in st.session_state:
@@ -43,19 +42,15 @@ def nlp_pages():
         if st.session_state.nlp_stage == "selection":
             st.write("こんにちは！ 私はAIアシスタントです。AIや言葉について、どんなことに興味がありますか？下のリストから質問を選んでください。")
             
-            # ▼▼▼ 修正点1 ▼▼▼
-            # st.radioの選択値をst.session_stateに直接保存するため、`key`を指定
             st.radio(
                 "質問リスト:",
-                range(len(questions)), # インデックスで選択を管理
-                format_func=lambda i: questions[i], # 表示は質問文
+                range(len(questions)),
+                format_func=lambda i: questions[i],
                 label_visibility="collapsed",
-                key="selected_nlp_radio_index" # keyを追加
+                key="selected_nlp_radio_index"
             )
 
             def decide_button_clicked():
-                # ▼▼▼ 修正点2 ▼▼▼
-                # st.session_stateから最新の選択値を取得
                 st.session_state.selected_nlp_question_index = st.session_state.selected_nlp_radio_index
                 st.session_state.nlp_stage = "animation"
             
@@ -69,11 +64,9 @@ def nlp_pages():
             with st.spinner("AIが回答を考えています..."):
                 time.sleep(2)
 
-            # 選択された質問のインデックス(0-5)に応じて、遷移先のページ名を決定
             next_page_index = st.session_state.selected_nlp_question_index + 1
             next_page = f"自然言語処理結果_{next_page_index}"
             
-            # ページ遷移を実行
             go_to(next_page)
             st.experimental_rerun()
 
@@ -86,15 +79,12 @@ def nlp_pages():
         page_name = f"自然言語処理結果_{i}"
         if st.session_state.page == page_name:
             st.header(f"質問{i}への回答")
-            
-            # ここに、各ページの回答文章を後から記述できます
             st.info(f"（ここに、質問{i}に対する回答文章を実装します）")
-
             st.divider()
             st.button("もう一度質問を選ぶ", on_click=go_to, args=("自然言語処理体験",))
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
             st.markdown(f"<div style='text-align:center;'>1-3-{i}</div>", unsafe_allow_html=True)
-            return # 該当ページを表示したら処理を終了
+            return
 
     # 1-4: 自然言語処理まとめ
     elif st.session_state.page == "自然言語処理まとめ":
