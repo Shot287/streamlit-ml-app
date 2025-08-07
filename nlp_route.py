@@ -1,8 +1,9 @@
 import streamlit as st
+import os
 import time
+from PIL import Image
 
 # --- セッション管理の初期化 ---
-# 進行状況と選択された質問を管理
 if "nlp_stage" not in st.session_state:
     st.session_state.nlp_stage = "selection"
 if "selected_nlp_question_index" not in st.session_state:
@@ -49,53 +50,34 @@ def nlp_pages():
     elif st.session_state.page == "自然言語処理体験":
         st.header("AIアシスタントへの質問")
 
-        # --- ステージ1: 質問選択 ---
         if st.session_state.nlp_stage == "selection":
             st.write("こんにちは！ 私はAIアシスタントです。AIや言葉について、どんなことに興味がありますか？下のリストから質問を選んでください。")
-            
-            st.radio(
-                "質問リスト:",
-                range(len(questions)),
-                format_func=lambda i: questions[i],
-                label_visibility="collapsed",
-                key="selected_nlp_radio_index"
-            )
-
+            st.radio("質問リスト:", range(len(questions)), format_func=lambda i: questions[i], label_visibility="collapsed", key="selected_nlp_radio_index")
             def decide_button_clicked():
                 st.session_state.selected_nlp_question_index = st.session_state.selected_nlp_radio_index
                 st.session_state.nlp_stage = "animation"
-            
             st.button("決定", on_click=decide_button_clicked)
 
-        # --- ステージ2: アニメーション ---
         elif st.session_state.nlp_stage == "animation":
             st.info(f"**質問:**\n\n{questions[st.session_state.selected_nlp_question_index]}")
             st.write("---")
-            
             st.write("AIが回答を考えています...")
             progress_bar = st.progress(0)
             for i in range(100):
                 time.sleep(0.02)
                 progress_bar.progress(i + 1)
-            
-            # アニメーション終了後、ボタン表示ステージへ
             st.session_state.nlp_stage = "show_button"
             st.rerun()
 
-        # ▼▼▼ 変更点 ▼▼▼
-        # --- ステージ3: 結果表示ボタン ---
         elif st.session_state.nlp_stage == "show_button":
             st.info(f"**質問:**\n\n{questions[st.session_state.selected_nlp_question_index]}")
             st.write("---")
             st.success("回答の準備ができました！")
-
             def navigate_to_result():
                 next_page_index = st.session_state.selected_nlp_question_index + 1
                 next_page = f"自然言語処理結果_{next_page_index}"
                 go_to(next_page)
-            
             st.button("結果を見る", on_click=navigate_to_result, use_container_width=True)
-        # ▲▲▲ 変更点ここまで ▲▲▲
 
         st.divider()
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
@@ -128,7 +110,33 @@ def nlp_pages():
         page_name = f"自然言語処理_裏側_{i}"
         if st.session_state.page == page_name:
             st.header(f"質問{i}の「裏側」解説")
-            st.info(f"（ここに、質問{i}の「裏側」に関する解説を実装します）")
+            
+            # ▼▼▼ 変更点 ▼▼▼
+            # AIの回答を再度表示
+            st.info(answers[i-1])
+            st.divider()
+
+            # 「裏側」解説用の画像パスを定義
+            backside_image_path_1 = "backside_1.png"
+            backside_image_path_2 = "backside_2.png"
+            backside_image_path_3 = "backside_3.png"
+            backside_image_path_4 = "backside_4.png"
+            backside_image_path_5 = "backside_5.png"
+            backside_image_path_6 = "backside_6.png"
+
+            backside_image_paths = [
+                backside_image_path_1, backside_image_path_2, backside_image_path_3,
+                backside_image_path_4, backside_image_path_5, backside_image_path_6
+            ]
+
+            # 対応する画像を表示
+            path = backside_image_paths[i-1]
+            if os.path.exists(path):
+                st.image(path, use_container_width=True)
+            else:
+                st.error(f"エラー: 解説画像 '{path}' が見つかりません。")
+            # ▲▲▲ 変更点ここまで ▲▲▲
+
             st.divider()
             st.button("◀ 回答に戻る", on_click=go_to, args=(f"自然言語処理結果_{i}",))
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
