@@ -23,13 +23,32 @@ def image_pages():
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-1</div>", unsafe_allow_html=True)
 
+    # ▼▼▼ ここからがメインの修正箇所 ▼▼▼
     # 2-2: 画像分類体験（画像選択ページ）
     elif st.session_state.page == "画像分類体験":
         st.header("画像分類を体験しよう！")
-        st.write("下の6つの枠から好きなものを1つ選び、「決定」ボタンを押してください。")
+        st.write("下の6つの画像から好きなものを1つ選び、「決定」ボタンを押してください。")
 
-        num_placeholders = 6
-        options = [f"画像{i+1}" for i in range(num_placeholders)]
+        # 画像が保存されているフォルダを指定
+        image_folder = "selectable_images"
+        
+        # フォルダから画像ファイルの一覧を取得し、名前順に並び替え
+        try:
+            image_files = sorted([
+                f for f in os.listdir(image_folder) 
+                if f.lower().endswith(('.png', '.jpg', '.jpeg'))
+            ])
+        except FileNotFoundError:
+            image_files = []
+
+        # 画像ファイルがない場合のエラー処理
+        if not image_files:
+            st.error(f"エラー: `{image_folder}` フォルダに画像ファイルが見つかりません。")
+            st.info("`selectable_images` という名前のフォルダを作成し、その中に6枚の画像を入れてください。")
+            st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
+            return
+
+        options = [f"画像{i+1}" for i in range(len(image_files))]
 
         def set_selection_and_navigate():
             selected_option = st.session_state.radio_selector
@@ -37,13 +56,14 @@ def image_pages():
             st.session_state.selected_index = idx
             st.session_state.page = "画像分類アニメ"
 
+        # 画像を3列で表示
         cols = st.columns(3)
-        for i in range(num_placeholders):
+        for i, file_name in enumerate(image_files):
             with cols[i % 3]:
-                st.markdown(
-                    f"<div style='border:2px dashed #bbb; border-radius:5px; width:100%; height:160px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; font-weight:bold; color:#bbb;'>{options[i]}</div>",
-                    unsafe_allow_html=True
-                )
+                # 実際の画像を表示する
+                image_path = os.path.join(image_folder, file_name)
+                st.image(image_path, use_container_width=True)
+
         st.divider()
         st.radio("分析したい画像を1枚選んでください：", options, key="radio_selector", horizontal=True)
         st.button("決定", on_click=set_selection_and_navigate, use_container_width=True)
@@ -88,7 +108,6 @@ def image_pages():
 
                 if os.path.exists(result_image_path):
                     image = Image.open(result_image_path)
-                    # ▼▼▼ ここを修正 ▼▼▼
                     st.image(image, caption=f"画像{choice_idx} の分析結果 {page_num}", use_container_width=True)
                 else:
                     st.error(f"エラー: 結果画像ファイル '{result_image_path}' が見つかりません。")
