@@ -12,7 +12,7 @@ def go_to(page):
     st.session_state.page = page
 
 def nlp_pages():
-    # 1-1: 自然言語処理イントロ (変更なし)
+    # 1-1: 自然言語処理イントロ
     if st.session_state.page == "自然言語処理イントロ":
         st.header("自然言語処理とは？")
         st.write("""
@@ -63,15 +63,13 @@ def nlp_pages():
             selected_question = st.radio(
                 "質問リスト:",
                 questions,
-                label_visibility="collapsed" # ラベルを非表示にしてスッキリ見せる
+                label_visibility="collapsed"
             )
 
-            # 「質問する」ボタンが押されたときの処理
             if st.button("この内容で質問する"):
                 with st.spinner("AIが回答を考えています..."):
                     time.sleep(1.5)
                 
-                # 選ばれた質問に応じて回答を準備
                 if selected_question == questions[0]:
                     st.session_state.nlp_answer = "例えば、スマートフォンの音声アシスタントや、動画サイトのおすすめ機能、お店の自動翻訳機など、多くの場所でAI技術が使われ、私たちの生活を便利にしています。"
                 elif selected_question == questions[1]:
@@ -85,7 +83,6 @@ def nlp_pages():
                 elif selected_question == questions[5]:
                     st.session_state.nlp_answer = "より詳しく言うと、AIは単語を「ベクトル」という数字の集まりに変換します。似た意味の単語は近い数字のベクトルになり、AIはこの数字の関係性から文全体の意味を計算します。この技術を「単語埋め込み」と呼び、自然言語処理の基礎となっています。"
             
-            # 回答がセッション情報にあれば表示
             if st.session_state.nlp_answer:
                 st.info(st.session_state.nlp_answer)
 
