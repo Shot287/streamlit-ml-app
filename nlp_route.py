@@ -2,17 +2,21 @@ import streamlit as st
 import time
 
 # --- セッション管理の初期化 ---
-# 表示する回答を保存する変数
-if "nlp_answer" not in st.session_state:
-    st.session_state.nlp_answer = ""
+# NLP体験ページの進行状況を管理する変数 (selection, animation, show_button, display_answer)
+if "nlp_stage" not in st.session_state:
+    st.session_state.nlp_stage = "selection"
+# 選択された質問を保存する変数
+if "selected_nlp_question" not in st.session_state:
+    st.session_state.selected_nlp_question = ""
 
 def go_to(page):
-    # ページを移動する際に回答をリセット
-    st.session_state.nlp_answer = ""
+    # 他のページに移動する際に進行状況をリセット
+    st.session_state.nlp_stage = "selection"
+    st.session_state.selected_nlp_question = ""
     st.session_state.page = page
 
 def nlp_pages():
-    # 1-1: 自然言語処理イントロ
+    # 1-1: 自然言語処理イントロ (変更なし)
     if st.session_state.page == "自然言語処理イントロ":
         st.header("自然言語処理とは？")
         st.write("""
@@ -24,67 +28,72 @@ def nlp_pages():
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>1-1</div>", unsafe_allow_html=True)
 
-    # 1-2: 自然言語処理体験（会話ページ）
+    # 1-2: 自然言語処理体験
     elif st.session_state.page == "自然言語処理体験":
-        st.header("AIアシスタントに質問してみよう！")
+        st.header("AIアシスタントへの質問")
 
-        col1, col2 = st.columns([1, 2])
+        # 質問の選択肢（一語一句同じ）
+        questions = [
+            "最近、AI技術がどのように私たちの日常生活を変えているのか、具体的な例を交えて教えてください。",
+            "AIと人間の違いやAIの強みについて、わかりやすく説明してください。",
+            "AIにできること、できないことについて、具体例を交えて説明してください。",
+            "AIに質問するとき、どんな聞き方をすると正確で分かりやすい答えが返ってきやすいですか？",
+            "AIはどうやって人間の言葉を理解しているのか、その仕組みをできるだけ詳しく説明してください。",
+            "AIはどうやって人間の言葉を理解しているのか、その仕組みをできるだけ詳しく説明してください。 " # 末尾に半角スペースを追加して別の選択肢として認識させる
+        ]
 
-        with col1:
-            # 簡単なAIアシスタントのイラスト
-            st.markdown("""
-            <div style="font-family: monospace; font-size: 8px; line-height: 1.2; text-align: center; margin-top: 20px;">
-            <pre>
-     .---.
-    / o o \\
-   |  ^  |
-    \\ = /
-     `---`
-   /  |  \\
-  |   |   |
-  `-------`
-            </pre>
-            </div>
-            """, unsafe_allow_html=True)
-            st.caption("AIアシスタント")
-
-        with col2:
+        # --- ステージ1: 質問選択 ---
+        if st.session_state.nlp_stage == "selection":
             st.write("こんにちは！ 私はAIアシスタントです。AIや言葉について、どんなことに興味がありますか？下のリストから質問を選んでください。")
-
-            questions = [
-                "AI技術は日常生活をどう変えているの？",
-                "AIと人間の違いやAIの強みは？",
-                "AIにできること、できないことは？",
-                "AIへの良い質問の仕方は？",
-                "AIはどうやって言葉を理解しているの？(簡潔版)",
-                "AIはどうやって言葉を理解しているの？(詳細版)"
-            ]
             
-            selected_question = st.radio(
-                "質問リスト:",
-                questions,
-                label_visibility="collapsed"
-            )
+            selected = st.radio("質問リスト:", questions, label_visibility="collapsed")
 
-            if st.button("この内容で質問する"):
-                with st.spinner("AIが回答を考えています..."):
-                    time.sleep(1.5)
-                
-                if selected_question == questions[0]:
-                    st.session_state.nlp_answer = "例えば、スマートフォンの音声アシスタントや、動画サイトのおすすめ機能、お店の自動翻訳機など、多くの場所でAI技術が使われ、私たちの生活を便利にしています。"
-                elif selected_question == questions[1]:
-                    st.session_state.nlp_answer = "人間は感情や経験から柔軟に考えられますが、AIは大量のデータを正確に高速で処理するのが得意です。疲れを知らない点もAIの強みと言えます。"
-                elif selected_question == questions[2]:
-                    st.session_state.nlp_answer = "AIは、ルールが明確な計算やデータ分析は得意ですが、人の気持ちを完全に理解したり、全く新しいものをゼロから創造したりすることはまだ難しいとされています。"
-                elif selected_question == questions[3]:
-                    st.session_state.nlp_answer = "AIに質問する時は、「何について」「どんな情報が欲しいか」を具体的に、そして明確な言葉で聞くと、より的確な答えが返ってきやすいです。背景情報も加えるとさらに良いでしょう。"
-                elif selected_question == questions[4]:
-                    st.session_state.nlp_answer = "AIは、たくさんの文章データを読んで、「この単語の後にはこの単語が来やすい」といった言葉のパターンを統計的に学習します。それによって、文の意味を予測したり、文章を生成したりしています。"
-                elif selected_question == questions[5]:
-                    st.session_state.nlp_answer = "より詳しく言うと、AIは単語を「ベクトル」という数字の集まりに変換します。似た意味の単語は近い数字のベクトルになり、AIはこの数字の関係性から文全体の意味を計算します。この技術を「単語埋め込み」と呼び、自然言語処理の基礎となっています。"
+            def decide_button_clicked():
+                st.session_state.selected_nlp_question = selected
+                st.session_state.nlp_stage = "animation"
             
-            if st.session_state.nlp_answer:
-                st.info(st.session_state.nlp_answer)
+            st.button("決定", on_click=decide_button_clicked)
+
+        # --- ステージ2: アニメーション ---
+        elif st.session_state.nlp_stage == "animation":
+            st.info(f"**質問:**\n\n{st.session_state.selected_nlp_question}")
+            st.write("---")
+            
+            with st.spinner("AIが回答を考えています..."):
+                time.sleep(2)
+            
+            st.session_state.nlp_stage = "show_button"
+            st.experimental_rerun()
+
+        # --- ステージ3: 結果表示ボタン ---
+        elif st.session_state.nlp_stage == "show_button":
+            st.info(f"**質問:**\n\n{st.session_state.selected_nlp_question}")
+            st.write("---")
+            st.success("回答の準備ができました！")
+
+            def show_result_button_clicked():
+                st.session_state.nlp_stage = "display_answer"
+            
+            st.button("結果を見る", on_click=show_result_button_clicked)
+
+        # --- ステージ4: 回答表示 ---
+        elif st.session_state.nlp_stage == "display_answer":
+            st.info(f"**質問:**\n\n{st.session_state.selected_nlp_question}")
+            st.write("---")
+
+            # 質問に対応する回答を定義
+            answers = {
+                questions[0]: "例えば、スマートフォンの音声アシスタントや、動画サイトのおすすめ機能、お店の自動翻訳機など、多くの場所でAI技術が使われ、私たちの生活を便利にしています。",
+                questions[1]: "人間は感情や経験から柔軟に考えられますが、AIは大量のデータを正確に高速で処理するのが得意です。疲れを知らない点もAIの強みと言えます。",
+                questions[2]: "AIは、ルールが明確な計算やデータ分析は得意ですが、人の気持ちを完全に理解したり、全く新しいものをゼロから創造したりすることはまだ難しいとされています。",
+                questions[3]: "AIに質問する時は、「何について」「どんな情報が欲しいか」を具体的に、そして明確な言葉で聞くと、より的確な答えが返ってきやすいです。背景情報も加えるとさらに良いでしょう。",
+                questions[4]: "AIは、たくさんの文章データを読んで、「この単語の後にはこの単語が来やすい」といった言葉のパターンを統計的に学習します。それによって、文の意味を予測したり、文章を生成したりしています。",
+                questions[5]: "より詳しく言うと、AIは単語を「ベクトル」という数字の集まりに変換します。似た意味の単語は近い数字のベクトルになり、AIはこの数字の関係性から文全体の意味を計算します。この技術を「単語埋め込み」と呼び、自然言語処理の基礎となっています。"
+            }
+
+            # 回答を表示
+            st.success("回答:")
+            st.info(answers.get(st.session_state.selected_nlp_question, "エラー：回答が見つかりません。"))
 
         st.divider()
         st.button("体験を終えて、まとめへ進む", on_click=go_to, args=("自然言語処理まとめ",), use_container_width=True)
