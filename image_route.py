@@ -31,11 +31,11 @@ def image_pages():
         # ▼▼▼ 変更点 ▼▼▼
         # ファイル名だけで、6枚の選択画像の変数を定義
         image_path_1 = "selectable_1.webp"  # 1枚目のみ .webp
-        image_path_2 = "selectable_2.jpg"   # 2枚目以降は .jpg
-        image_path_3 = "selectable_3.jpg"
-        image_path_4 = "selectable_4.jpg"
-        image_path_5 = "selectable_5.jpg"
-        image_path_6 = "selectable_6.jpg"
+        image_path_2 = "selectable_2.png"   # 2枚目以降は .png
+        image_path_3 = "selectable_3.png"
+        image_path_4 = "selectable_4.png"
+        image_path_5 = "selectable_5.png"
+        image_path_6 = "selectable_6.png"
         # ▲▲▲ 変更点ここまで ▲▲▲
 
         # 後の処理で使いやすいようにリストにまとめる
@@ -101,7 +101,7 @@ def image_pages():
             if st.session_state.page == page_name:
                 st.header(f"分析結果：画像 {choice_idx} ({page_num}/5)")
                 
-                # 結果画像のファイル名（拡張子は.pngのままにしています。必要に応じて修正してください）
+                # 結果画像のファイル名
                 result_image_path = f"result_{choice_idx}_{page_num}.png"
 
                 if os.path.exists(result_image_path):
