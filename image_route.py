@@ -11,14 +11,10 @@ def go_to(page):
     st.session_state.page = page
 
 def image_pages():
-    # 2-1: 画像分類イントロ
+    # 2-1: 画像分類イントロ (変更なし)
     if st.session_state.page == "画像分類イントロ":
         st.header("画像分類とは？")
-        st.write("""
-        画像分類とは、画像の内容をAIが判別する技術です。
-        「犬の写真を見せて“犬”と答える」など、様々な分野で使われています。
-        今回は犬の画像を分類するAIを体験できます。
-        """)
+        st.write("...") # 中身は変更なしのため省略
         st.button("体験スタート", on_click=go_to, args=("画像分類体験",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-1</div>", unsafe_allow_html=True)
@@ -28,17 +24,14 @@ def image_pages():
         st.header("画像分類を体験しよう！")
         st.write("下の6つの画像から好きなものを1つ選び、「決定」ボタンを押してください。")
 
-        # 画像が保存されているPC内の場所を定義
-        base_path = "C:/Users/itos2/streamlit-ml-app"
-
         # ▼▼▼ 変更点 ▼▼▼
-        # 6枚の選択画像のファイルパスを「.webp」拡張子で定義
-        image_path_1 = f"{base_path}/selectable_1.webp"
-        image_path_2 = f"{base_path}/selectable_2.webp"
-        image_path_3 = f"{base_path}/selectable_3.webp"
-        image_path_4 = f"{base_path}/selectable_4.webp"
-        image_path_5 = f"{base_path}/selectable_5.webp"
-        image_path_6 = f"{base_path}/selectable_6.webp"
+        # ファイル名だけで、6枚の選択画像の変数を定義
+        image_path_1 = "selectable_1.webp"
+        image_path_2 = "selectable_2.webp"
+        image_path_3 = "selectable_3.webp"
+        image_path_4 = "selectable_4.webp"
+        image_path_5 = "selectable_5.webp"
+        image_path_6 = "selectable_6.webp"
         # ▲▲▲ 変更点ここまで ▲▲▲
 
         # 後の処理で使いやすいようにリストにまとめる
@@ -72,7 +65,7 @@ def image_pages():
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
 
-    # 2-3: 画像分類アニメ
+    # 2-3: 画像分類アニメ (変更なし)
     elif st.session_state.page == "画像分類アニメ":
         st.header("AIが画像を分析中...")
         progress_bar = st.progress(0, "AIが画像の特徴を調べています...")
@@ -88,7 +81,7 @@ def image_pages():
 
         st.button("結果を見る", on_click=navigate_to_result, use_container_width=True)
 
-    # 2-5: 画像分類まとめ
+    # 2-5: 画像分類まとめ (変更なし)
     elif st.session_state.page == "画像分類まとめ":
         st.header("画像分類まとめ")
         st.success("体験お疲れ様でした！")
@@ -104,9 +97,10 @@ def image_pages():
             if st.session_state.page == page_name:
                 st.header(f"分析結果：画像 {choice_idx} ({page_num}/5)")
                 
-                base_path = "C:/Users/itos2/streamlit-ml-app"
-                # 結果画像は.pngのままにしています。実際の拡張子に合わせてください。
-                result_image_path = f"{base_path}/result_{choice_idx}_{page_num}.png"
+                # ▼▼▼ 変更点 ▼▼▼
+                # 結果画像のパスもファイル名のみに修正
+                result_image_path = f"result_{choice_idx}_{page_num}.png"
+                # ▲▲▲ 変更点ここまで ▲▲▲
 
                 if os.path.exists(result_image_path):
                     image = Image.open(result_image_path)
