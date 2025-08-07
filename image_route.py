@@ -12,7 +12,7 @@ def go_to(page):
     st.session_state.page = page
 
 def image_pages():
-    # 2-1: 画像分類イントロ
+    # 2-1: 画像分類イントロ (変更なし)
     if st.session_state.page == "画像分類イントロ":
         st.header("画像分類とは？")
         st.write("""
@@ -24,7 +24,7 @@ def image_pages():
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-1</div>", unsafe_allow_html=True)
 
-    # 2-2: 画像分類体験（画像選択ページ）
+    # 2-2: 画像分類体験（画像選択ページ）(変更なし)
     elif st.session_state.page == "画像分類体験":
         st.header("画像分類を体験しよう！")
         st.write("下の6つの枠から好きなものを1つ選び、「決定」ボタンを押してください。")
@@ -32,16 +32,12 @@ def image_pages():
         num_placeholders = 6
         options = [f"画像{i+1}" for i in range(num_placeholders)]
 
-        # 「決定」ボタンが押されたときに実行される関数
         def set_selection_and_navigate():
             selected_option = st.session_state.radio_selector
             idx = options.index(selected_option)
-            # 選択されたインデックスを保存
             st.session_state.selected_index = idx
-            # アニメーションページへ遷移
             st.session_state.page = "画像分類アニメ"
 
-        # 6つのプレースホルダーを3列で表示
         cols = st.columns(3)
         for i in range(num_placeholders):
             with cols[i % 3]:
@@ -64,24 +60,29 @@ def image_pages():
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
 
+    # ▼▼▼ ここを修正 ▼▼▼
     # 2-3: 画像分類アニメ
     elif st.session_state.page == "画像分類アニメ":
         st.header("AIが画像を分析中...")
+
+        # アニメーション処理
         progress_bar = st.progress(0, "AIが画像の特徴を調べています...")
         for i in range(100):
             time.sleep(0.03)
             progress_bar.progress(i + 1)
         st.success("分析が完了しました！")
-        time.sleep(1)
 
-        # ★★ここからが分岐処理★★
-        # 保存されたインデックスを基に、遷移先のページ名を動的に作成
-        idx = st.session_state.selected_index
-        next_page = f"画像分類結果_{idx + 1}"
-        go_to(next_page)
-        st.experimental_rerun() # ページを再読み込みして遷移を確定
+        # 「結果を見る」ボタンのコールバック関数
+        def navigate_to_result():
+            idx = st.session_state.selected_index
+            next_page = f"画像分類結果_{idx + 1}"
+            go_to(next_page)
 
-    # 2-5: 画像分類まとめ
+        # ボタンを配置
+        st.button("結果を見る", on_click=navigate_to_result, use_container_width=True)
+    # ▲▲▲ 修正ここまで ▲▲▲
+
+    # 2-5: 画像分類まとめ (変更なし)
     elif st.session_state.page == "画像分類まとめ":
         st.header("画像分類まとめ")
         st.success("体験お疲れ様でした！")
@@ -92,15 +93,13 @@ def image_pages():
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-5</div>", unsafe_allow_html=True)
 
-    # 2-4: 各結果ページの生成
-    # ループを使って6つの結果ページを動的に処理
+    # 2-4: 各結果ページの生成 (変更なし)
     for i in range(1, 7):
         page_name = f"画像分類結果_{i}"
         if st.session_state.page == page_name:
             st.header(f"分析結果：画像 {i}")
-            result_image_path = f"result_{i}.png" # 対応する結果画像ファイル名
+            result_image_path = f"result_{i}.png"
 
-            # 画像ファイルの存在を確認して表示
             if os.path.exists(result_image_path):
                 image = Image.open(result_image_path)
                 st.image(image, caption=f"画像{i} の分析結果", use_column_width=True)
@@ -110,4 +109,4 @@ def image_pages():
             st.button("体験のまとめへ", on_click=go_to, args=("画像分類まとめ",))
             st.button("選択画面に戻る", on_click=go_to, args=("画像分類体験",))
             st.markdown(f"<div style='text-align:center;'>2-4-{i}</div>", unsafe_allow_html=True)
-            break # 該当ページを処理したらループを抜ける
+            break
