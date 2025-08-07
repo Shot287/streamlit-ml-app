@@ -14,8 +14,7 @@ def go_to(page):
     st.session_state.page = page
 
 def nlp_pages():
-    # ▼▼▼ 変更点 ▼▼▼
-    # 質問と回答のリストをここで定義
+    # 質問と回答のリストを定義
     questions = [
         "最近、AI技術がどのように私たちの日常生活を変えているのか、具体的な例を交えて教えてください。",
         "AIと人間の違いやAIの強みについて、わかりやすく説明してください。",
@@ -32,7 +31,6 @@ def nlp_pages():
         "AIは膨大なテキストデータからパターンを学習し、人間の言葉を統計的に処理しています。単語や文の意味、文脈を数値データとして捉え、ニューラルネットワークという技術を使って、あなたの質問の意図や意味を推測します。最近のAIは数百億の例文をもとに訓練されているので、多様な表現にも柔軟に対応できるようになっています。",
         "AIと対話することで、知識を調べたり、英語の練習をしたり、プログラミングのサポートを受けたりできます。自分の考えを言語化して整理したいときや、新しい発想がほしいときにもAIは役立ちます。また、趣味や興味に合わせて質問すれば、今まで知らなかった情報や学びに出会えるのも魅力のひとつです。"
     ]
-    # ▲▲▲ 変更点ここまで ▲▲▲
 
     # 1-1: 自然言語処理イントロ
     if st.session_state.page == "自然言語処理イントロ":
@@ -67,10 +65,14 @@ def nlp_pages():
                 time.sleep(0.02)
                 progress_bar.progress(i + 1)
             st.success("回答の準備ができました！")
+            
             next_page_index = st.session_state.selected_nlp_question_index + 1
             next_page = f"自然言語処理結果_{next_page_index}"
+            
             go_to(next_page)
-            st.experimental_rerun()
+            # ▼▼▼ ここを修正 ▼▼▼
+            st.rerun()
+            # ▲▲▲ 修正ここまで ▲▲▲
 
         st.divider()
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
@@ -90,34 +92,22 @@ def nlp_pages():
         page_name = f"自然言語処理結果_{i}"
         if st.session_state.page == page_name:
             st.header(f"質問{i}への回答")
-            
-            # ▼▼▼ 変更点 ▼▼▼
-            # プレースホルダーをご指定の回答文章に置き換え
             st.info(answers[i-1])
-
             st.divider()
-
-            # 新しいボタンを追加
             st.button("AIの裏側を見る。", on_click=go_to, args=(f"自然言語処理_裏側_{i}",))
-            # ▲▲▲ 変更点ここまで ▲▲▲
-
             st.button("もう一度質問を選ぶ", on_click=go_to, args=("自然言語処理体験",))
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
             st.markdown(f"<div style='text-align:center;'>1-3-{i}</div>", unsafe_allow_html=True)
             return
 
-    # ▼▼▼ 変更点 ▼▼▼
     # 1-5: 新しい「裏側」ページの生成
     for i in range(1, 7):
         page_name = f"自然言語処理_裏側_{i}"
         if st.session_state.page == page_name:
             st.header(f"質問{i}の「裏側」解説")
-            
             st.info(f"（ここに、質問{i}の「裏側」に関する解説を実装します）")
-
             st.divider()
             st.button("◀ 回答に戻る", on_click=go_to, args=(f"自然言語処理結果_{i}",))
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
             st.markdown(f"<div style='text-align:center;'>1-5-{i}</div>", unsafe_allow_html=True)
             return
-    # ▲▲▲ 変更点ここまで ▲▲▲
