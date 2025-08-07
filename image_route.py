@@ -16,7 +16,7 @@ def go_to(page):
     st.session_state.page = page
 
 def image_pages():
-    # 2-1: 画像分類イントロ (変更なし)
+    # 2-1: 画像分類イントロ
     if st.session_state.page == "画像分類イントロ":
         st.header("画像分類とは？")
         st.write("""
@@ -24,22 +24,22 @@ def image_pages():
         「犬の写真を見せて“犬”と答える」など、様々な分野で使われています。
         今回は犬の画像を分類するAIを体験できます。
         """)
-        st.button("犬の画像分類へ", on_click=go_to, args=("犬の画像分類",))
+        # ▼▼▼ 変更点 1 ▼▼▼
+        st.button("体験スタート", on_click=go_to, args=("画像分類体験",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-1</div>", unsafe_allow_html=True)
 
-    # 2-2: 犬の画像分類 (★★ここのロジックを修正★★)
-    elif st.session_state.page == "犬の画像分類":
-        st.header("犬の画像分類を体験しよう！")
+    # ▼▼▼ 変更点 2 ▼▼▼
+    # 2-2: 犬の画像分類 → 画像分類体験 にページ名を変更
+    elif st.session_state.page == "画像分類体験":
+        st.header("画像分類を体験しよう！")
         st.write("下の6枚から好きな画像を選び、「決定」ボタンを押してください。")
 
-        # demo_imagesフォルダから画像リストを取得
         demo_imgs = sorted([
             f for f in os.listdir("demo_images")
             if f.lower().endswith((".png", ".jpg", ".jpeg"))
         ])[:6]
 
-        # 画像がない場合はエラー表示
         if not demo_imgs:
             st.error("`demo_images` フォルダに画像ファイルを追加してください。")
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
@@ -47,46 +47,32 @@ def image_pages():
 
         options = [f"画像{i+1}" for i in range(len(demo_imgs))]
 
-        # --- ▼▼▼ 修正箇所 ▼▼▼ ---
-        # 「決定」ボタンが押されたときに実行される関数
         def set_selection_and_navigate():
-            # ラジオボタンで選択された値 (例: "画像3") を取得
             selected_option = st.session_state.radio_selector
-            # 選択された値からインデックス番号 (例: 2) を特定
             idx = options.index(selected_option)
-
-            # 選択された画像の情報をsession_stateに保存
             st.session_state.selected_img = os.path.join("demo_images", demo_imgs[idx])
             st.session_state.img_index = idx
-            # 次のページへ遷移させる
             st.session_state.page = "画像分類アニメ"
 
-        # 画像を3列で表示
         cols = st.columns(3)
         for i, img_file in enumerate(demo_imgs):
             with cols[i % 3]:
                 st.image(os.path.join("demo_images", img_file), caption=f"犬の画像{i+1}", use_column_width=True)
-
-        st.divider() # 区切り線
-
-        # ラジオボタンと決定ボタンを配置
+        st.divider()
         st.radio("分析したい画像を1枚選んでください：", options, key="radio_selector", horizontal=True)
         st.button("決定", on_click=set_selection_and_navigate, use_container_width=True)
-        # --- ▲▲▲ 修正箇所 ▲▲▲ ---
 
         st.divider()
         st.button("前のページへ戻る", on_click=go_to, args=("画像分類イントロ",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
 
-
-    # 2-3: 画像分類アニメ (変更なし)
+    # 2-3: 画像分類アニメ
     elif st.session_state.page == "画像分類アニメ":
         st.header("AIが画像を分析中...")
         if st.session_state.selected_img and os.path.exists(st.session_state.selected_img):
              image = Image.open(st.session_state.selected_img)
              st.image(image, caption="分析中の画像", width=300)
-
         progress_bar = st.progress(0, "AIが画像の特徴を調べています...")
         for i in range(100):
             time.sleep(0.03)
@@ -97,8 +83,7 @@ def image_pages():
         go_to("画像分類結果")
         st.experimental_rerun()
 
-
-    # 2-4: 画像分類結果 (変更なし)
+    # 2-4: 画像分類結果
     elif st.session_state.page == "画像分類結果":
         st.header("AIによる画像分類の結果")
         st.balloons()
@@ -117,10 +102,11 @@ def image_pages():
             st.error("画像が選択されていません。前のページに戻ってやり直してください。")
 
         st.button("体験のまとめへ", on_click=go_to, args=("画像分類まとめ",))
-        st.button("前のページへ戻る", on_click=go_to, args=("犬の画像分類",))
+        # ▼▼▼ 変更点 3 ▼▼▼
+        st.button("前のページへ戻る", on_click=go_to, args=("画像分類体験",))
         st.markdown("<div style='text-align:center;'>2-4</div>", unsafe_allow_html=True)
 
-    # 2-5: 画像分類まとめ (変更なし)
+    # 2-5: 画像分類まとめ
     elif st.session_state.page == "画像分類まとめ":
         st.header("画像分類まとめ")
         st.success("体験お疲れ様でした！")
@@ -134,6 +120,6 @@ def image_pages():
         - 医療画像の診断支援（例：レントゲン写真から病変を発見）
         - 自動運転車での障害物検知
         """)
-        st.button("もう一度体験する", on_click=go_to, args=("犬の画像分類",))
+        st.button("もう一度体験する", on_click=go_to, args=("画像分類体験",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-5</div>", unsafe_allow_html=True)
