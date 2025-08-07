@@ -4,7 +4,6 @@ import time
 from PIL import Image
 
 # --- セッション管理の初期化 ---
-# 選択された画像のインデックス(0-5)を保存する変数
 if "selected_index" not in st.session_state:
     st.session_state.selected_index = 0
 
@@ -42,71 +41,83 @@ def image_pages():
         for i in range(num_placeholders):
             with cols[i % 3]:
                 st.markdown(
-                    f"""
-                    <div style='border:2px dashed #bbb; border-radius: 5px; width:100%; height:160px;
-                        display:flex; align-items:center; justify-content:center; margin-bottom:8px;
-                        font-weight:bold; color:#bbb;'>
-                    {options[i]}
-                    </div>
-                    """,
+                    f"<div style='border:2px dashed #bbb; border-radius:5px; width:100%; height:160px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; font-weight:bold; color:#bbb;'>{options[i]}</div>",
                     unsafe_allow_html=True
                 )
         st.divider()
         st.radio("分析したい画像を1枚選んでください：", options, key="radio_selector", horizontal=True)
         st.button("決定", on_click=set_selection_and_navigate, use_container_width=True)
-
         st.divider()
         st.button("前のページへ戻る", on_click=go_to, args=("画像分類イントロ",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
 
-    # ▼▼▼ ここを修正 ▼▼▼
-    # 2-3: 画像分類アニメ
+    # 2-3: 画像分類アニメ (変更なし)
     elif st.session_state.page == "画像分類アニメ":
         st.header("AIが画像を分析中...")
-
-        # アニメーション処理
         progress_bar = st.progress(0, "AIが画像の特徴を調べています...")
         for i in range(100):
             time.sleep(0.03)
             progress_bar.progress(i + 1)
         st.success("分析が完了しました！")
 
-        # 「結果を見る」ボタンのコールバック関数
         def navigate_to_result():
+            # 常に結果スライドの1ページ目へ移動
             idx = st.session_state.selected_index
-            next_page = f"画像分類結果_{idx + 1}"
+            next_page = f"画像分類結果_{idx + 1}_1"
             go_to(next_page)
 
-        # ボタンを配置
         st.button("結果を見る", on_click=navigate_to_result, use_container_width=True)
-    # ▲▲▲ 修正ここまで ▲▲▲
 
     # 2-5: 画像分類まとめ (変更なし)
     elif st.session_state.page == "画像分類まとめ":
         st.header("画像分類まとめ")
         st.success("体験お疲れ様でした！")
-        st.write("""
-        今回は、AIが犬の画像を見分ける体験をしました。
-        """)
+        st.write("今回は、AIが犬の画像を見分ける体験をしました。")
         st.button("もう一度体験する", on_click=go_to, args=("画像分類体験",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-5</div>", unsafe_allow_html=True)
 
-    # 2-4: 各結果ページの生成 (変更なし)
-    for i in range(1, 7):
-        page_name = f"画像分類結果_{i}"
-        if st.session_state.page == page_name:
-            st.header(f"分析結果：画像 {i}")
-            result_image_path = f"result_{i}.png"
+    # ▼▼▼ ここからがメインの修正箇所 ▼▼▼
+    # 2-4: 各結果ページ（スライドショー）の生成
+    # 6つの選択肢 x 5枚のスライド = 30ページを動的に処理
+    for choice_idx in range(1, 7):
+        for page_num in range(1, 6):
+            page_name = f"画像分類結果_{choice_idx}_{page_num}"
+            if st.session_state.page == page_name:
+                st.header(f"分析結果：画像 {choice_idx} ({page_num}/5)")
 
-            if os.path.exists(result_image_path):
-                image = Image.open(result_image_path)
-                st.image(image, caption=f"画像{i} の分析結果", use_column_width=True)
-            else:
-                st.error(f"エラー: 結果画像ファイル '{result_image_path}' が見つかりません。")
+                # 表示する画像ファイルのパスを生成
+                result_image_path = f"result_{choice_idx}_{page_num}.png"
 
-            st.button("体験のまとめへ", on_click=go_to, args=("画像分類まとめ",))
-            st.button("選択画面に戻る", on_click=go_to, args=("画像分類体験",))
-            st.markdown(f"<div style='text-align:center;'>2-4-{i}</div>", unsafe_allow_html=True)
-            break
+                if os.path.exists(result_image_path):
+                    image = Image.open(result_image_path)
+                    st.image(image, caption=f"画像{choice_idx} の分析結果 {page_num}", use_column_width=True)
+                else:
+                    st.error(f"エラー: 結果画像ファイル '{result_image_path}' が見つかりません。")
+
+                # ナビゲーションボタンを2列で配置
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    # 「戻る」ボタンの処理
+                    if page_num > 1:
+                        # 2ページ目以降は前のページに戻る
+                        prev_page = f"画像分類結果_{choice_idx}_{page_num - 1}"
+                        st.button("◀ 戻る", on_click=go_to, args=(prev_page,), use_container_width=True)
+                    else:
+                        # 1ページ目の場合は選択画面に戻る
+                        st.button("◀ 選択画面に戻る", on_click=go_to, args=("画像分類体験",), use_container_width=True)
+
+                with col2:
+                    # 「次へ」ボタンの処理
+                    if page_num < 5:
+                        # 4ページ目までは次のページに進む
+                        next_page = f"画像分類結果_{choice_idx}_{page_num + 1}"
+                        st.button("次へ ▶", on_click=go_to, args=(next_page,), use_container_width=True)
+                    else:
+                        # 5ページ目（最終ページ）はまとめページに進む
+                        st.button("まとめへ ▶", on_click=go_to, args=("画像分類まとめ",), use_container_width=True)
+
+                st.markdown(f"<div style='text-align:center;'>2-4-{choice_idx}-{page_num}</div>", unsafe_allow_html=True)
+                return # 該当ページを処理したら関数の実行を終了
