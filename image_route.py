@@ -11,7 +11,7 @@ def go_to(page):
     st.session_state.page = page
 
 def image_pages():
-    # 2-1: 画像分類イントロ
+    # 2-1: 画像分類イントロ (変更なし)
     if st.session_state.page == "画像分類イントロ":
         st.header("画像分類とは？")
         st.write("""
@@ -29,26 +29,21 @@ def image_pages():
         st.header("画像分類を体験しよう！")
         st.write("下の6つの画像から好きなものを1つ選び、「決定」ボタンを押してください。")
 
-        # 画像が保存されているフォルダを指定
-        image_folder = "selectable_images"
-        
-        # フォルダから画像ファイルの一覧を取得し、名前順に並び替え
-        try:
-            image_files = sorted([
-                f for f in os.listdir(image_folder) 
-                if f.lower().endswith(('.png', '.jpg', '.jpeg'))
-            ])
-        except FileNotFoundError:
-            image_files = []
+        # 6枚の選択画像のファイルパスを、個別の変数として直接定義
+        image_path_1 = "selectable_1.png"
+        image_path_2 = "selectable_2.png"
+        image_path_3 = "selectable_3.png"
+        image_path_4 = "selectable_4.png"
+        image_path_5 = "selectable_5.png"
+        image_path_6 = "selectable_6.png"
 
-        # 画像ファイルがない場合のエラー処理
-        if not image_files:
-            st.error(f"エラー: `{image_folder}` フォルダに画像ファイルが見つかりません。")
-            st.info("`selectable_images` という名前のフォルダを作成し、その中に6枚の画像を入れてください。")
-            st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
-            return
+        # 後の処理で使いやすいようにリストにまとめる
+        image_paths = [
+            image_path_1, image_path_2, image_path_3,
+            image_path_4, image_path_5, image_path_6
+        ]
 
-        options = [f"画像{i+1}" for i in range(len(image_files))]
+        options = [f"画像{i+1}" for i in range(len(image_paths))]
 
         def set_selection_and_navigate():
             selected_option = st.session_state.radio_selector
@@ -58,11 +53,14 @@ def image_pages():
 
         # 画像を3列で表示
         cols = st.columns(3)
-        for i, file_name in enumerate(image_files):
+        for i, path in enumerate(image_paths):
             with cols[i % 3]:
-                # 実際の画像を表示する
-                image_path = os.path.join(image_folder, file_name)
-                st.image(image_path, use_container_width=True)
+                # 画像ファイルが存在するか確認してから表示
+                if os.path.exists(path):
+                    st.image(path, use_container_width=True)
+                else:
+                    # ファイルが見つからない場合はエラーメッセージを表示
+                    st.error(f"エラー: '{path}' が見つかりません。")
 
         st.divider()
         st.radio("分析したい画像を1枚選んでください：", options, key="radio_selector", horizontal=True)
@@ -72,7 +70,7 @@ def image_pages():
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
 
-    # 2-3: 画像分類アニメ
+    # 2-3: 画像分類アニメ (変更なし)
     elif st.session_state.page == "画像分類アニメ":
         st.header("AIが画像を分析中...")
         progress_bar = st.progress(0, "AIが画像の特徴を調べています...")
@@ -83,13 +81,12 @@ def image_pages():
 
         def navigate_to_result():
             idx = st.session_state.selected_index
-            # 常に結果スライドの1ページ目へ移動
             next_page = f"画像分類結果_{idx + 1}_1"
             go_to(next_page)
 
         st.button("結果を見る", on_click=navigate_to_result, use_container_width=True)
 
-    # 2-5: 画像分類まとめ
+    # 2-5: 画像分類まとめ (変更なし)
     elif st.session_state.page == "画像分類まとめ":
         st.header("画像分類まとめ")
         st.success("体験お疲れ様でした！")
@@ -98,14 +95,13 @@ def image_pages():
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-5</div>", unsafe_allow_html=True)
 
-    # 2-4: 各結果ページ（スライドショー）の生成
+    # 2-4: 各結果ページ（スライドショー）の生成 (変更なし)
     for choice_idx in range(1, 7):
         for page_num in range(1, 6):
             page_name = f"画像分類結果_{choice_idx}_{page_num}"
             if st.session_state.page == page_name:
-                st.header(f"分析結果 ({page_num}/5)")
+                st.header(f"分析結果：画像 {choice_idx} ({page_num}/5)")
                 result_image_path = f"result_{choice_idx}_{page_num}.png"
-
                 if os.path.exists(result_image_path):
                     image = Image.open(result_image_path)
                     st.image(image, caption=f"画像{choice_idx} の分析結果 {page_num}", use_container_width=True)
