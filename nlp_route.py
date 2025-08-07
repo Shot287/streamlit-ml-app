@@ -2,22 +2,18 @@ import streamlit as st
 import time
 
 # --- セッション管理の初期化 ---
+# 進行状況と選択された質問を管理
 if "nlp_stage" not in st.session_state:
     st.session_state.nlp_stage = "selection"
-if "selected_nlp_question" not in st.session_state:
-    st.session_state.selected_nlp_question = ""
+if "selected_nlp_question_index" not in st.session_state:
+    st.session_state.selected_nlp_question_index = 0
 
 def go_to(page):
+    # ページを移動する際に進行状況をリセット
     st.session_state.nlp_stage = "selection"
-    st.session_state.selected_nlp_question = ""
     st.session_state.page = page
 
 def nlp_pages():
-    # ▼▼▼ 目印 ▼▼▼
-    # この文字がアプリに表示されれば、ファイル更新は成功です。
-    st.title("★ファイル更新テスト★")
-    # ▲▲▲ 目印 ▲▲▲
-
     # 1-1: 自然言語処理イントロ
     if st.session_state.page == "自然言語処理イントロ":
         st.header("自然言語処理とは？")
@@ -43,59 +39,68 @@ def nlp_pages():
             "AIはどうやって人間の言葉を理解しているのか、その仕組みをできるだけ詳しく説明してください。 "
         ]
 
+        # --- ステージ1: 質問選択 ---
         if st.session_state.nlp_stage == "selection":
             st.write("こんにちは！ 私はAIアシスタントです。AIや言葉について、どんなことに興味がありますか？下のリストから質問を選んでください。")
-            selected = st.radio("質問リスト:", questions, label_visibility="collapsed")
+            
+            # ▼▼▼ 修正点1 ▼▼▼
+            # st.radioの選択値をst.session_stateに直接保存するため、`key`を指定
+            st.radio(
+                "質問リスト:",
+                range(len(questions)), # インデックスで選択を管理
+                format_func=lambda i: questions[i], # 表示は質問文
+                label_visibility="collapsed",
+                key="selected_nlp_radio_index" # keyを追加
+            )
+
             def decide_button_clicked():
-                st.session_state.selected_nlp_question = selected
+                # ▼▼▼ 修正点2 ▼▼▼
+                # st.session_stateから最新の選択値を取得
+                st.session_state.selected_nlp_question_index = st.session_state.selected_nlp_radio_index
                 st.session_state.nlp_stage = "animation"
+            
             st.button("決定", on_click=decide_button_clicked)
 
+        # --- ステージ2: アニメーション & ページ遷移 ---
         elif st.session_state.nlp_stage == "animation":
-            st.info(f"**質問:**\n\n{st.session_state.selected_nlp_question}")
+            st.info(f"**質問:**\n\n{questions[st.session_state.selected_nlp_question_index]}")
             st.write("---")
+            
             with st.spinner("AIが回答を考えています..."):
                 time.sleep(2)
-            st.session_state.nlp_stage = "show_button"
+
+            # 選択された質問のインデックス(0-5)に応じて、遷移先のページ名を決定
+            next_page_index = st.session_state.selected_nlp_question_index + 1
+            next_page = f"自然言語処理結果_{next_page_index}"
+            
+            # ページ遷移を実行
+            go_to(next_page)
             st.experimental_rerun()
 
-        elif st.session_state.nlp_stage == "show_button":
-            st.info(f"**質問:**\n\n{st.session_state.selected_nlp_question}")
-            st.write("---")
-            st.success("回答の準備ができました！")
-            def show_result_button_clicked():
-                st.session_state.nlp_stage = "display_answer"
-            st.button("結果を見る", on_click=show_result_button_clicked)
-
-        elif st.session_state.nlp_stage == "display_answer":
-            st.info(f"**質問:**\n\n{st.session_state.selected_nlp_question}")
-            st.write("---")
-            answers = {
-                questions[0]: "例えば、スマートフォンの音声アシスタントや、動画サイトのおすすめ機能、お店の自動翻訳機など、多くの場所でAI技術が使われ、私たちの生活を便利にしています。",
-                questions[1]: "人間は感情や経験から柔軟に考えられますが、AIは大量のデータを正確に高速で処理するのが得意です。疲れを知らない点もAIの強みと言えます。",
-                questions[2]: "AIは、ルールが明確な計算やデータ分析は得意ですが、人の気持ちを完全に理解したり、全く新しいものをゼロから創造したりすることはまだ難しいとされています。",
-                questions[3]: "AIに質問する時は、「何について」「どんな情報が欲しいか」を具体的に、そして明確な言葉で聞くと、より的確な答えが返ってきやすいです。背景情報も加えるとさらに良いでしょう。",
-                questions[4]: "AIは、たくさんの文章データを読んで、「この単語の後にはこの単語が来やすい」といった言葉のパターンを統計的に学習します。それによって、文の意味を予測したり、文章を生成したりしています。",
-                questions[5]: "より詳しく言うと、AIは単語を「ベクトル」という数字の集まりに変換します。似た意味の単語は近い数字のベクトルになり、AIはこの数字の関係性から文全体の意味を計算します。この技術を「単語埋め込み」と呼び、自然言語処理の基礎となっています。"
-            }
-            st.success("回答:")
-            st.info(answers.get(st.session_state.selected_nlp_question, "エラー：回答が見つかりません。"))
-
         st.divider()
-        st.button("体験を終えて、まとめへ進む", on_click=go_to, args=("自然言語処理まとめ",), use_container_width=True)
+        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>1-2</div>", unsafe_allow_html=True)
 
-    # 1-3: 自然言語処理まとめ
+    # 1-3: 各結果ページの生成
+    for i in range(1, 7):
+        page_name = f"自然言語処理結果_{i}"
+        if st.session_state.page == page_name:
+            st.header(f"質問{i}への回答")
+            
+            # ここに、各ページの回答文章を後から記述できます
+            st.info(f"（ここに、質問{i}に対する回答文章を実装します）")
+
+            st.divider()
+            st.button("もう一度質問を選ぶ", on_click=go_to, args=("自然言語処理体験",))
+            st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
+            st.markdown(f"<div style='text-align:center;'>1-3-{i}</div>", unsafe_allow_html=True)
+            return # 該当ページを表示したら処理を終了
+
+    # 1-4: 自然言語処理まとめ
     elif st.session_state.page == "自然言語処理まとめ":
         st.header("自然言語処理まとめ")
         st.success("体験お疲れ様でした！")
-        st.write("""
-        今回は、AIとの質疑応答を通して、AIがどのように言葉を扱っているかの一端を体験しました。
-        AIは単語や文を**データとして処理**し、膨大な知識の中から最も関連性の高い答えを探し出しています。
-
-        私たちが普段何気なく使っているスマートフォンの検索や翻訳アプリも、このような自然言語処理技術の応用例です。
-        AIへの質問の仕方を工夫することで、この強力なツールをより上手に活用することができます。
-        """)
+        st.write("（まとめページの内容）")
         st.button("もう一度体験する", on_click=go_to, args=("自然言語処理体験",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
-        st.markdown("<div style='text-align:center;'>1-3</div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align:center;'>1-4</div>", unsafe_allow_html=True)
