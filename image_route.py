@@ -28,22 +28,17 @@ def image_pages():
         st.header("画像分類を体験しよう！")
         st.write("下の6つの画像から好きなものを1つ選び、「決定」ボタンを押してください。")
 
-        # ▼▼▼ 変更点 ▼▼▼
-        # ファイル名だけで、6枚の選択画像の変数を定義
-        image_path_1 = "selectable_1.webp"  # 1枚目のみ .webp
-        image_path_2 = "selectable_2.png"   # 2枚目以降は .png
+        image_path_1 = "selectable_1.webp"
+        image_path_2 = "selectable_2.png"
         image_path_3 = "selectable_3.png"
         image_path_4 = "selectable_4.png"
         image_path_5 = "selectable_5.png"
         image_path_6 = "selectable_6.png"
-        # ▲▲▲ 変更点ここまで ▲▲▲
 
-        # 後の処理で使いやすいようにリストにまとめる
         image_paths = [
             image_path_1, image_path_2, image_path_3,
             image_path_4, image_path_5, image_path_6
         ]
-
         options = [f"画像{i+1}" for i in range(len(image_paths))]
 
         def set_selection_and_navigate():
@@ -52,7 +47,6 @@ def image_pages():
             st.session_state.selected_index = idx
             st.session_state.page = "画像分類アニメ"
 
-        # 画像を3列で表示
         cols = st.columns(3)
         for i, path in enumerate(image_paths):
             with cols[i % 3]:
@@ -85,23 +79,69 @@ def image_pages():
 
         st.button("結果を見る", on_click=navigate_to_result, use_container_width=True)
 
+    # ▼▼▼ 変更点 ▼▼▼
     # 2-5: 画像分類まとめ
     elif st.session_state.page == "画像分類まとめ":
         st.header("画像分類まとめ")
         st.success("体験お疲れ様でした！")
         st.write("今回は、AIが犬の画像を見分ける体験をしました。")
+        # ボタンの遷移先を変更
+        st.button("最後の解説へ ▶", on_click=go_to, args=("画像分類追加_1",), use_container_width=True)
+        st.divider()
         st.button("もう一度体験する", on_click=go_to, args=("画像分類体験",))
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
         st.markdown("<div style='text-align:center;'>2-5</div>", unsafe_allow_html=True)
 
-    # 2-4: 各結果ページ（スライドショー）の生成
+    # ▼▼▼ 新しいページを追加 ▼▼▼
+    # 2-6: 追加ページ1
+    elif st.session_state.page == "画像分類追加_1":
+        st.header("解説 1/3")
+        path = "extra_1.png"
+        if os.path.exists(path):
+            st.image(path, use_container_width=True)
+        else:
+            st.error(f"エラー: 画像ファイル '{path}' が見つかりません。")
+        st.button("次へ ▶", on_click=go_to, args=("画像分類追加_2",), use_container_width=True)
+        st.markdown("<div style='text-align:center;'>2-6</div>", unsafe_allow_html=True)
+
+    # 2-7: 追加ページ2
+    elif st.session_state.page == "画像分類追加_2":
+        st.header("解説 2/3")
+        path = "extra_2.png"
+        if os.path.exists(path):
+            st.image(path, use_container_width=True)
+        else:
+            st.error(f"エラー: 画像ファイル '{path}' が見つかりません。")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.button("◀ 戻る", on_click=go_to, args=("画像分類追加_1",), use_container_width=True)
+        with col2:
+            st.button("次へ ▶", on_click=go_to, args=("画像分類追加_3",), use_container_width=True)
+        st.markdown("<div style='text-align:center;'>2-7</div>", unsafe_allow_html=True)
+
+    # 2-8: 追加ページ3
+    elif st.session_state.page == "画像分類追加_3":
+        st.header("解説 3/3")
+        path = "extra_3.png"
+        if os.path.exists(path):
+            st.image(path, use_container_width=True)
+        else:
+            st.error(f"エラー: 画像ファイル '{path}' が見つかりません。")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.button("◀ 戻る", on_click=go_to, args=("画像分類追加_2",), use_container_width=True)
+        with col2:
+            st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
+        st.markdown("<div style='text-align:center;'>2-8</div>", unsafe_allow_html=True)
+    # ▲▲▲ 変更点ここまで ▲▲▲
+
+    # 2-4: 各結果ページ（スライドショー）の生成 (変更なし)
     for choice_idx in range(1, 7):
         for page_num in range(1, 6):
             page_name = f"画像分類結果_{choice_idx}_{page_num}"
             if st.session_state.page == page_name:
                 st.header(f"分析結果：画像 {choice_idx} ({page_num}/5)")
                 
-                # 結果画像のファイル名
                 result_image_path = f"result_{choice_idx}_{page_num}.png"
 
                 if os.path.exists(result_image_path):
