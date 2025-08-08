@@ -36,7 +36,7 @@ def image_pages():
         with col2:
             st.button("←  タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 2-2: 画像分類体験（カード＋ボタンで確実に選択）
+    # 2-2: 画像分類体験
     elif st.session_state.page == "画像分類体験":
         st.header("画像分類を体験しよう！")
         st.write("下の6枚から1つ選んで「この画像で決定」を押してください。ホバーでふわっと浮きます。")
@@ -47,12 +47,12 @@ def image_pages():
         ]
         labels = [f"画像{i+1}" for i in range(len(image_paths))]
 
-        # --- CSS: 背景透明化＋ホバー演出 ---
+        # --- CSS: 背景完全透明化＋ホバー演出 ---
         st.markdown("""
         <style>
-        /* 画像のカード化（背景透明） */
+        /* カード全体 */
         .card-wrap {
-            background: transparent; /* 白から透明へ変更 */
+            background: transparent !important;
             border-radius: 14px;
             padding: 10px;
             border: 2px solid transparent;
@@ -62,7 +62,12 @@ def image_pages():
         .card-wrap:hover {
             transform: translateY(-2px) scale(1.02);
             box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-            border-color: rgba(20,184,166,0.55); /* ティール系アクセント */
+            border-color: rgba(20,184,166,0.55);
+        }
+        /* st.imageの親要素背景を透明に */
+        div[data-testid="stImage"] {
+            background: transparent !important;
+            padding: 0 !important;
         }
         .thumb-label {
             text-align: center;
@@ -73,7 +78,7 @@ def image_pages():
         </style>
         """, unsafe_allow_html=True)
 
-        # 3×2 グリッド
+        # 3×2 グリッド表示
         cols = st.columns(3, gap="large")
         for i, (path, label) in enumerate(zip(image_paths, labels)):
             with cols[i % 3]:
@@ -84,7 +89,6 @@ def image_pages():
                     st.error(f"エラー: '{path}' が見つかりません。")
                 st.markdown(f"<div class='thumb-label'>{label}</div>", unsafe_allow_html=True)
 
-                # 画像ごとの選択ボタン
                 if st.button(f"この画像を選ぶ", key=f"pick_{i}", use_container_width=True):
                     st.session_state.selected_index = i
                     st.session_state.page = "画像分類アニメ"
@@ -162,7 +166,7 @@ def image_pages():
         with col2:
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 2-4: 各結果ページ（スライドショー）
+    # 2-4: 各結果ページ
     for choice_idx in range(1, 7):
         for page_num in range(1, 6):
             page_name = f"画像分類結果_{choice_idx}_{page_num}"
