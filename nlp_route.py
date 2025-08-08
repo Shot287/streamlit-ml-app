@@ -128,7 +128,7 @@ def nlp_pages():
                 next_page_index = st.session_state.selected_nlp_question_index + 1
                 next_page = f"自然言語処理結果_{next_page_index}"
                 go_to(next_page)
-            st.button("結果を見る", on_click=navigate_to_result, use_container_width=True)
+            st.button("AIの回答を見る", on_click=navigate_to_result, use_container_width=True)
 
         st.divider()
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
