@@ -13,11 +13,11 @@ def go_to(page):
     st.session_state.page = page
 
 # ======================
-# スタイル（明るめ配色＋ボタン高さ完全統一）
+# スタイル（明るめ配色＋ボタン高さ完全統一／中央白四角削除）
 # ======================
 st.markdown("""
 <style>
-/* 背景：明るいグラデ */
+/* 背景：明るいグラデーション */
 .stApp {
   background: linear-gradient(135deg, #fefefe 0%, #e6f7ff 40%, #f0faff 100%);
 }
@@ -29,13 +29,12 @@ st.markdown("""
   max-width: 1100px;
 }
 
-/* カード */
+/* glassカード削除 → 背景透明にして枠・影も消去 */
 .glass {
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 18px;
-  border: 1px solid rgba(200, 200, 200, 0.4);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-  padding: 2rem 1.8rem;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 /* タイトル */
@@ -55,9 +54,7 @@ p.subtitle {
   font-size: 1.05rem;
 }
 
-/* -------------------------
-   ボタン共通（基準スタイル）
-   ------------------------- */
+/* ボタン共通 */
 .stButton > button {
   background: linear-gradient(135deg, #38bdf8, #0ea5e9);
   color: #ffffff;
@@ -67,8 +64,6 @@ p.subtitle {
   font-size: 1rem;
   box-shadow: 0 4px 12px rgba(14,165,233,0.3);
   transition: all .15s ease;
-
-  /* ★ 高さ＆中央揃えをガッチリ固定 */
   height: 64px !important;
   min-height: 64px !important;
   max-height: 64px !important;
@@ -77,7 +72,7 @@ p.subtitle {
   align-items: center !important;
   justify-content: center !important;
   line-height: 1 !important;
-  gap: .5rem !important; /* アイコンとテキストの間隔 */
+  gap: .5rem !important;
 }
 .stButton > button:hover {
   transform: translateY(-1px);
@@ -87,12 +82,10 @@ p.subtitle {
   transform: translateY(0);
 }
 
-/* セカンダリ（右のボタン）: 必ず stButton > button に届く形で上書き */
+/* セカンダリ（右のボタン） */
 .btn-secondary .stButton > button {
   background: linear-gradient(135deg, #94a3b8, #64748b) !important;
   color: #ffffff !important;
-
-  /* 念のため高さ指定を再度明示（優先度強化） */
   height: 64px !important;
   min-height: 64px !important;
   max-height: 64px !important;
@@ -100,7 +93,7 @@ p.subtitle {
   line-height: 1 !important;
 }
 
-/* どちらのボタンも同じ高さに揃えるためのユーティリティ */
+/* 同じ高さ揃え */
 .btn-same-height .stButton > button {
   height: 64px !important;
   min-height: 64px !important;
@@ -136,16 +129,13 @@ hr.soft-divider {
 
 # --- ページルーティング ---
 if st.session_state.page == "タイトル":
-    # タイトルと説明
     st.markdown('<h1 class="title">AIの裏側体験</h1>', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">高校生向けに、AIがどう考え・どう見ているのかを直感的に体験できます。</p>', unsafe_allow_html=True)
 
-    # 概要カード
+    # 白い四角を削除しつつレイアウト維持
     with st.container():
-        st.markdown('<div class="glass">', unsafe_allow_html=True)
         col_a, col_b = st.columns([1, 1], gap="large")
 
-        # 左：NLP
         with col_a:
             st.markdown('<div class="label-chip">🧠 言葉を理解するAI</div>', unsafe_allow_html=True)
             st.markdown('<h3 class="card-title">自然言語処理（NLP）</h3>', unsafe_allow_html=True)
@@ -157,7 +147,6 @@ if st.session_state.page == "タイトル":
             st.button("🗣️  自然言語処理を体験する", on_click=go_to, args=("自然言語処理イントロ",), use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # 右：Vision（セカンダリ配色）
         with col_b:
             st.markdown('<div class="label-chip">👀 画像を見るAI</div>', unsafe_allow_html=True)
             st.markdown('<h3 class="card-title">画像分類（Vision）</h3>', unsafe_allow_html=True)
@@ -171,7 +160,6 @@ if st.session_state.page == "タイトル":
 
         st.markdown('<hr class="soft-divider">', unsafe_allow_html=True)
 
-        # 補足
         col_c, col_d, col_e = st.columns([1, 1, 1], gap="large")
         with col_c:
             st.markdown('<div class="label-chip">⚡ 体験の流れ</div>', unsafe_allow_html=True)
@@ -182,8 +170,6 @@ if st.session_state.page == "タイトル":
         with col_e:
             st.markdown('<div class="label-chip">🎯 ねらい</div>', unsafe_allow_html=True)
             st.markdown('<p class="card-text">AIの強み/限界をイメージで掴む。</p>', unsafe_allow_html=True)
-
-        st.markdown('</div>', unsafe_allow_html=True)
 
 elif st.session_state.page.startswith("自然言語処理"):
     nlp_pages()
