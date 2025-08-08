@@ -11,17 +11,37 @@ def go_to(page):
     st.session_state.page = page
 
 def image_pages():
-    # 2-1: 画像分類イントロ
+    # 2-1: 画像分類イントロ（整形）
     if st.session_state.page == "画像分類イントロ":
-        st.header("画像分類とは？")
-        st.write("""
-        画像分類とは、画像の内容をAIが判別する技術です。
-        「犬の写真を見せて“犬”と答える」など、様々な分野で使われています。
-        今回は犬の画像を分類するAIを体験できます。
-        """)
-        st.button("体験スタート", on_click=go_to, args=("画像分類体験",))
-        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
-        st.markdown("<div style='text-align:center;'>2-1</div>", unsafe_allow_html=True)
+        # ラベルチップ
+        st.markdown('<div class="label-chip">👀 画像を見るAI</div>', unsafe_allow_html=True)
+
+        # 見出し
+        st.header("画像分類（Vision）とは？")
+
+        # 本文（2段落・行間広め）
+        st.markdown(
+            """
+<div class="card-text" style="font-size:1.05rem; line-height:1.9;">
+画像分類とは、画像の内容を AI が判別する技術です。  
+「犬の写真を見せて“犬”と答える」など、様々な分野で使われています。
+</div>
+<br>
+<div class="card-text" style="font-size:1.05rem; line-height:1.9;">
+今回は <b>犬の画像</b> を題材に、AIが特徴を拾い、どのように答えへたどり着くのかを体験してみましょう。
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+
+        st.markdown("<div style='height:0.6rem;'></div>", unsafe_allow_html=True)
+
+        # ボタンは横並び・同幅・同じ高さ（共通CSSが適用されます）
+        col1, col2 = st.columns([1, 1], gap="large")
+        with col1:
+            st.button("▶  体験スタート", on_click=go_to, args=("画像分類体験",), use_container_width=True)
+        with col2:
+            st.button("←  タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
     # 2-2: 画像分類体験（画像選択ページ）
     elif st.session_state.page == "画像分類体験":
@@ -59,9 +79,8 @@ def image_pages():
         st.radio("分析したい画像を1枚選んでください：", options, key="radio_selector", horizontal=True)
         st.button("決定", on_click=set_selection_and_navigate, use_container_width=True)
         st.divider()
-        st.button("前のページへ戻る", on_click=go_to, args=("画像分類イントロ",))
-        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
-        st.markdown("<div style='text-align:center;'>2-2</div>", unsafe_allow_html=True)
+        st.button("前のページへ戻る", on_click=go_to, args=("画像分類イントロ",), use_container_width=True)
+        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
     # 2-3: 画像分類アニメ
     elif st.session_state.page == "画像分類アニメ":
@@ -79,20 +98,16 @@ def image_pages():
 
         st.button("結果を見る", on_click=navigate_to_result, use_container_width=True)
 
-    # ▼▼▼ 変更点 ▼▼▼
     # 2-5: 画像分類まとめ
     elif st.session_state.page == "画像分類まとめ":
         st.header("画像分類まとめ")
         st.success("体験お疲れ様でした！")
         st.write("今回は、AIが犬の画像を見分ける体験をしました。")
-        # ボタンの遷移先を変更
         st.button("最後の解説へ ▶", on_click=go_to, args=("画像分類追加_1",), use_container_width=True)
         st.divider()
-        st.button("もう一度体験する", on_click=go_to, args=("画像分類体験",))
-        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
-        st.markdown("<div style='text-align:center;'>2-5</div>", unsafe_allow_html=True)
+        st.button("もう一度体験する", on_click=go_to, args=("画像分類体験",), use_container_width=True)
+        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # ▼▼▼ 新しいページを追加 ▼▼▼
     # 2-6: 追加ページ1
     elif st.session_state.page == "画像分類追加_1":
         st.header("解説 1/3")
@@ -102,7 +117,6 @@ def image_pages():
         else:
             st.error(f"エラー: 画像ファイル '{path}' が見つかりません。")
         st.button("次へ ▶", on_click=go_to, args=("画像分類追加_2",), use_container_width=True)
-        st.markdown("<div style='text-align:center;'>2-6</div>", unsafe_allow_html=True)
 
     # 2-7: 追加ページ2
     elif st.session_state.page == "画像分類追加_2":
@@ -117,7 +131,6 @@ def image_pages():
             st.button("◀ 戻る", on_click=go_to, args=("画像分類追加_1",), use_container_width=True)
         with col2:
             st.button("次へ ▶", on_click=go_to, args=("画像分類追加_3",), use_container_width=True)
-        st.markdown("<div style='text-align:center;'>2-7</div>", unsafe_allow_html=True)
 
     # 2-8: 追加ページ3
     elif st.session_state.page == "画像分類追加_3":
@@ -132,18 +145,15 @@ def image_pages():
             st.button("◀ 戻る", on_click=go_to, args=("画像分類追加_2",), use_container_width=True)
         with col2:
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
-        st.markdown("<div style='text-align:center;'>2-8</div>", unsafe_allow_html=True)
-    # ▲▲▲ 変更点ここまで ▲▲▲
 
-    # 2-4: 各結果ページ（スライドショー）の生成 (変更なし)
+    # 2-4: 各結果ページ（スライドショー）の生成
     for choice_idx in range(1, 7):
         for page_num in range(1, 6):
             page_name = f"画像分類結果_{choice_idx}_{page_num}"
             if st.session_state.page == page_name:
                 st.header(f"分析結果：画像 {choice_idx} ({page_num}/5)")
-                
-                result_image_path = f"result_{choice_idx}_{page_num}.png"
 
+                result_image_path = f"result_{choice_idx}_{page_num}.png"
                 if os.path.exists(result_image_path):
                     image = Image.open(result_image_path)
                     st.image(image, caption=f"画像{choice_idx} の分析結果 {page_num}", use_container_width=True)
@@ -164,5 +174,4 @@ def image_pages():
                     else:
                         st.button("まとめへ ▶", on_click=go_to, args=("画像分類まとめ",), use_container_width=True)
 
-                st.markdown(f"<div style='text-align:center;'>2-4-{choice_idx}-{page_num}</div>", unsafe_allow_html=True)
                 return
