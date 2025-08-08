@@ -63,7 +63,7 @@ def nlp_pages():
 
     # 1-2: 自然言語処理体験（選択画面をカード風に）
     elif st.session_state.page == "自然言語処理体験":
-        st.header("AIアシスタントへの質問")
+        st.header("AIへの質問")
 
         # --- カード風ラジオのCSS ---
         st.markdown("""
@@ -92,7 +92,7 @@ def nlp_pages():
         """, unsafe_allow_html=True)
 
         if st.session_state.nlp_stage == "selection":
-            st.write("こんにちは！ 私はAIアシスタントです。AIや言葉について、どんなことに興味がありますか？下のリストから質問を選んでください。")
+            st.write("下のリストから、好きな質問を１つ選んでください。")
 
             st.radio(
                 "質問リスト:",
