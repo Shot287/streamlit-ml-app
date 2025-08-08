@@ -147,7 +147,7 @@ def nlp_pages():
             st.header(f"質問{i}への回答")
             st.info(answers[i-1])
             st.divider()
-            st.button("AIの裏側を見る。", on_click=go_to, args=(f"自然言語処理_裏側_{i}",), use_container_width=True)
+            st.button("AIの裏側", on_click=go_to, args=(f"自然言語処理_裏側_{i}",), use_container_width=True)
             st.button("もう一度質問を選ぶ", on_click=go_to, args=("自然言語処理体験",), use_container_width=True)
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
             return
