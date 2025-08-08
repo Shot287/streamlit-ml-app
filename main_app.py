@@ -13,7 +13,7 @@ def go_to(page):
     st.session_state.page = page
 
 # ======================
-# スタイル（明るめ配色＋ボタン高さ完全統一／白四角なし）
+# スタイル（背景＋新ボタン配色）
 # ======================
 st.markdown("""
 <style>
@@ -29,25 +29,24 @@ st.markdown("""
   max-width: 1100px;
 }
 
-/* glassカード（無効化して白い帯を出さない） */
+/* glassカード無効化（白帯削除） */
 .glass { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
 
 /* タイトル・サブタイトル */
 h1.title { color: #0f172a; font-weight: 800; letter-spacing: .02em; text-align: center; margin-bottom: .2rem; }
 p.subtitle { color: #334155; text-align: center; margin: 0 0 1.6rem 0; font-size: 1.05rem; }
 
-/* --- ボタン（基準スタイル：オレンジ系） --- */
+/* --- プライマリボタン（淡ティール系） --- */
 .stButton > button {
-  background: linear-gradient(135deg, #f97316, #ea580c); /* オレンジ〜濃オレンジ */
+  background: linear-gradient(135deg, #5eead4, #14b8a6);
   color: #ffffff;
   border: none;
   border-radius: 14px;
   font-weight: 700;
   font-size: 1rem;
-  box-shadow: 0 4px 12px rgba(234,88,12,0.3);
+  box-shadow: 0 4px 12px rgba(20,184,166,0.3);
   transition: all .15s ease;
 
-  /* 高さ・中央揃えを固定 */
   height: 64px !important;
   min-height: 64px !important;
   max-height: 64px !important;
@@ -60,13 +59,13 @@ p.subtitle { color: #334155; text-align: center; margin: 0 0 1.6rem 0; font-size
 }
 .stButton > button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(234,88,12,0.4);
+  box-shadow: 0 6px 14px rgba(20,184,166,0.4);
 }
 .stButton > button:active { transform: translateY(0); }
 
-/* --- セカンダリ（グリーン系） --- */
+/* --- セカンダリボタン（サーモンピンク系） --- */
 .btn-secondary .stButton > button {
-  background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+  background: linear-gradient(135deg, #fb7185, #f43f5e) !important;
   color: #ffffff !important;
 
   height: 64px !important;
@@ -81,7 +80,7 @@ p.subtitle { color: #334155; text-align: center; margin: 0 0 1.6rem 0; font-size
 }
 .btn-secondary .stButton > button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(34,197,94,0.4) !important;
+  box-shadow: 0 6px 14px rgba(244,63,94,0.4) !important;
 }
 
 /* ユーティリティ：同じ高さ揃え */
