@@ -47,12 +47,12 @@ def image_pages():
         ]
         labels = [f"画像{i+1}" for i in range(len(image_paths))]
 
-        # --- CSS: st.image をカード風に（角丸・影・ホバー演出） ---
+        # --- CSS: 背景透明化＋ホバー演出 ---
         st.markdown("""
         <style>
-        /* 画像のカード化 */
+        /* 画像のカード化（背景透明） */
         .card-wrap {
-            background: #ffffff;
+            background: transparent; /* 白から透明へ変更 */
             border-radius: 14px;
             padding: 10px;
             border: 2px solid transparent;
@@ -84,7 +84,7 @@ def image_pages():
                     st.error(f"エラー: '{path}' が見つかりません。")
                 st.markdown(f"<div class='thumb-label'>{label}</div>", unsafe_allow_html=True)
 
-                # 画像ごとの選択ボタン（押したら即選択してアニメへ）
+                # 画像ごとの選択ボタン
                 if st.button(f"この画像を選ぶ", key=f"pick_{i}", use_container_width=True):
                     st.session_state.selected_index = i
                     st.session_state.page = "画像分類アニメ"
