@@ -8,11 +8,13 @@ from PIL import Image
 if "selected_index" not in st.session_state:
     st.session_state.selected_index = 0
 if "scrolled_to_analyze" not in st.session_state:
-    st.session_state.scrolled_to_analyze = False  # アニメページでの一度きりスクロール制御
+    st.session_state.scrolled_to_analyze = False   # アニメページでの一度きりスクロール制御
+if "last_scrolled_page" not in st.session_state:
+    st.session_state.last_scrolled_page = ""       # 結果ページでの1回スクロール制御
 
 def go_to(page):
     st.session_state.page = page
-    # ページが変わるたびにスクロールフラグはリセット
+    # ページが変わるたびにアニメ用フラグはリセット
     if page != "画像分類アニメ":
         st.session_state.scrolled_to_analyze = False
 
@@ -122,13 +124,11 @@ AIがどのように画像の特徴を見つけ出し、犬種を判定するの
                 """
                 <script>
                 const go = () => {
-                  const el = window.parent?.document?.getElementById('analyze-anchor') || document.getElementById('analyze-anchor');
-                  if (el) {
-                    el.scrollIntoView({behavior: 'smooth', block: 'start'});
-                  }
+                  const doc = window.parent?.document || document;
+                  const el = doc.getElementById('analyze-anchor');
+                  if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
                 };
-                // 少し待ってからスクロール（描画完了待ち）
-                setTimeout(go, 100);
+                setTimeout(go, 120);
                 </script>
                 """,
                 height=0, width=0
@@ -197,12 +197,31 @@ AIがどのように画像の特徴を見つけ出し、犬種を判定するの
         with col2:
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 2-4: 各結果ページ（スライドショー）
+    # 2-4: 各結果ページ（スライドショー）→ ページ切替時に常に最上部へ
     for choice_idx in range(1, 7):
         for page_num in range(1, 6):
             page_name = f"画像分類結果_{choice_idx}_{page_num}"
             if st.session_state.page == page_name:
-                st.header(f"分析結果({page_num}/5)")
+                # --- ここでトップへ自動スクロール（同じページで何度もは実行しない） ---
+                st.markdown("<div id='result-top'></div>", unsafe_allow_html=True)
+                if st.session_state.last_scrolled_page != page_name:
+                    components.html(
+                        """
+                        <script>
+                        const goTop = () => {
+                          const doc = window.parent?.document || document;
+                          const el = doc.getElementById('result-top');
+                          if (el) el.scrollIntoView({behavior:'instant', block:'start'});
+                          // instant が合わなければ 'smooth' に変更可
+                        };
+                        setTimeout(goTop, 60);
+                        </script>
+                        """,
+                        height=0, width=0
+                    )
+                    st.session_state.last_scrolled_page = page_name
+
+                st.header(f"分析結果：画像 {choice_idx} ({page_num}/5)")
 
                 result_image_path = f"result_{choice_idx}_{page_num}.png"
                 if os.path.exists(result_image_path):
