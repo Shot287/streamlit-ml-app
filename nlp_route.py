@@ -34,15 +34,11 @@ def nlp_pages():
         "AIと対話することで、知識を調べたり、英語の練習をしたり、プログラミングのサポートを受けたりできます。自分の考えを言語化して整理したいときや、新しい発想がほしいときにもAIは役立ちます。また、趣味や興味に合わせて質問すれば、今まで知らなかった情報や学びに出会えるのも魅力のひとつです。"
     ]
 
-    # 1-1: 自然言語処理イントロ（整形済み）
+    # 1-1: 自然言語処理イントロ（整形）
     if st.session_state.page == "自然言語処理イントロ":
-        # ラベルチップ
         st.markdown('<div class="label-chip">🧠 言葉を理解するAI</div>', unsafe_allow_html=True)
-
-        # 見出し
         st.header("自然言語処理（NLP）とは？")
 
-        # 本文（行間と読みやすさを意識して2段落）
         st.markdown(
             """
 <div class="card-text" style="font-size:1.05rem; line-height:1.9;">
@@ -59,15 +55,12 @@ def nlp_pages():
 
         st.markdown("<div style='height:0.6rem;'></div>", unsafe_allow_html=True)
 
-        # ボタンを横並び・同幅で配置
+        # ▼ ボタンはどちらも素の st.button を使う（共通CSSだけ当てる）
         col1, col2 = st.columns([1, 1], gap="large")
         with col1:
             st.button("▶  体験スタート", on_click=go_to, args=("自然言語処理体験",), use_container_width=True)
         with col2:
-            # セカンダリ配色（main_appのCSSが適用されます）
-            st.markdown('<div class="btn-secondary">', unsafe_allow_html=True)
             st.button("←  タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
 
     # 1-2: 自然言語処理体験
     elif st.session_state.page == "自然言語処理体験":
@@ -105,7 +98,6 @@ def nlp_pages():
         st.divider()
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 「まとめ」のブロックをforループの前に移動
     elif st.session_state.page == "自然言語処理まとめ":
         st.header("自然言語処理まとめ")
         st.success("体験お疲れ様でした！")
@@ -113,7 +105,7 @@ def nlp_pages():
         st.button("もう一度体験する", on_click=go_to, args=("自然言語処理体験",), use_container_width=True)
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 1-3: 各結果ページの生成
+    # 1-3: 各結果ページ
     for i in range(1, 7):
         page_name = f"自然言語処理結果_{i}"
         if st.session_state.page == page_name:
@@ -125,12 +117,12 @@ def nlp_pages():
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
             return
 
-    # 1-5: 新しい「裏側」ページの生成
+    # 1-5: 「裏側」ページ
     for i in range(1, 7):
         page_name = f"自然言語処理_裏側_{i}"
         if st.session_state.page == page_name:
             st.header(f"質問{i}の「裏側」解説")
-            
+
             st.subheader("AIの回答（再掲）")
             st.info(answers[i-1])
             st.divider()
@@ -145,7 +137,7 @@ def nlp_pages():
                 st.image(path, caption="解説画像", use_container_width=True)
             else:
                 st.error(f"エラー: 解説画像 '{path}' が見つかりません。")
-            
+
             st.divider()
             st.button("◀ 回答に戻る", on_click=go_to, args=(f"自然言語処理結果_{i}",), use_container_width=True)
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
