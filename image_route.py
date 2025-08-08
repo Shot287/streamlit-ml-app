@@ -23,7 +23,7 @@ def image_pages():
 </div>
 <br>
 <div class="card-text" style="font-size:1.05rem; line-height:1.9;">
-今回は <b>犬の画像</b> を題材に、AIが特徴を拾い、どのように答えへたどり着くのかを体験してみましょう。
+今回の体験では、 <b>6枚の犬の画像</b> から1枚を選び、AIがその犬種を推測します。
 </div>
 """,
             unsafe_allow_html=True,
