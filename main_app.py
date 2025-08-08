@@ -13,11 +13,11 @@ def go_to(page):
     st.session_state.page = page
 
 # ======================
-# スタイル（明るめ配色＋ボタン高さ統一）
+# スタイル（明るめ配色＋ボタン高さ完全統一）
 # ======================
 st.markdown("""
 <style>
-/* 背景を明るいグラデーションに */
+/* 背景：明るいグラデ */
 .stApp {
   background: linear-gradient(135deg, #fefefe 0%, #e6f7ff 40%, #f0faff 100%);
 }
@@ -31,7 +31,7 @@ st.markdown("""
 
 /* カード */
 .glass {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.92);
   border-radius: 18px;
   border: 1px solid rgba(200, 200, 200, 0.4);
   box-shadow: 0 8px 18px rgba(0,0,0,0.08);
@@ -55,21 +55,29 @@ p.subtitle {
   font-size: 1.05rem;
 }
 
-/* ボタン共通 */
+/* -------------------------
+   ボタン共通（基準スタイル）
+   ------------------------- */
 .stButton > button {
   background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-  color: white;
+  color: #ffffff;
   border: none;
   border-radius: 14px;
-  padding: 0.85rem 1rem;
   font-weight: 700;
   font-size: 1rem;
   box-shadow: 0 4px 12px rgba(14,165,233,0.3);
   transition: all .15s ease;
-  height: 60px;                  /* ★ 高さ固定 */
-  display: flex;                 /* ★ 中央揃え */
-  align-items: center;           /* ★ 縦中央 */
-  justify-content: center;       /* ★ 横中央 */
+
+  /* ★ 高さ＆中央揃えをガッチリ固定 */
+  height: 64px !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+  padding: 0 1.2rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  gap: .5rem !important; /* アイコンとテキストの間隔 */
 }
 .stButton > button:hover {
   transform: translateY(-1px);
@@ -79,10 +87,26 @@ p.subtitle {
   transform: translateY(0);
 }
 
-/* セカンダリボタン */
-.btn-secondary > button {
+/* セカンダリ（右のボタン）: 必ず stButton > button に届く形で上書き */
+.btn-secondary .stButton > button {
   background: linear-gradient(135deg, #94a3b8, #64748b) !important;
-  color: white !important;
+  color: #ffffff !important;
+
+  /* 念のため高さ指定を再度明示（優先度強化） */
+  height: 64px !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+  padding: 0 1.2rem !important;
+  line-height: 1 !important;
+}
+
+/* どちらのボタンも同じ高さに揃えるためのユーティリティ */
+.btn-same-height .stButton > button {
+  height: 64px !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+  padding: 0 1.2rem !important;
+  line-height: 1 !important;
 }
 
 /* ラベル */
@@ -97,19 +121,9 @@ p.subtitle {
   margin-bottom: .3rem;
 }
 
-/* カードタイトル */
-.card-title {
-  color: #0f172a;
-  font-weight: 700;
-  margin-bottom: .3rem;
-}
-
-/* カード本文 */
-.card-text {
-  color: #334155;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
+/* カード内テキスト */
+.card-title { color: #0f172a; font-weight: 700; margin-bottom: .3rem; }
+.card-text  { color: #334155; font-size: 0.95rem; line-height: 1.5; }
 
 /* 区切り線 */
 hr.soft-divider {
@@ -122,13 +136,16 @@ hr.soft-divider {
 
 # --- ページルーティング ---
 if st.session_state.page == "タイトル":
+    # タイトルと説明
     st.markdown('<h1 class="title">AIの裏側体験</h1>', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">高校生向けに、AIがどう考え・どう見ているのかを直感的に体験できます。</p>', unsafe_allow_html=True)
 
+    # 概要カード
     with st.container():
         st.markdown('<div class="glass">', unsafe_allow_html=True)
         col_a, col_b = st.columns([1, 1], gap="large")
 
+        # 左：NLP
         with col_a:
             st.markdown('<div class="label-chip">🧠 言葉を理解するAI</div>', unsafe_allow_html=True)
             st.markdown('<h3 class="card-title">自然言語処理（NLP）</h3>', unsafe_allow_html=True)
@@ -136,8 +153,11 @@ if st.session_state.page == "タイトル":
                 '<p class="card-text">質問に答えたり要約したり。AIが「言葉」をどう分解し、意味を推測しているのかを体験します。</p>',
                 unsafe_allow_html=True,
             )
+            st.markdown('<div class="btn-same-height">', unsafe_allow_html=True)
             st.button("🗣️  自然言語処理を体験する", on_click=go_to, args=("自然言語処理イントロ",), use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
+        # 右：Vision（セカンダリ配色）
         with col_b:
             st.markdown('<div class="label-chip">👀 画像を見るAI</div>', unsafe_allow_html=True)
             st.markdown('<h3 class="card-title">画像分類（Vision）</h3>', unsafe_allow_html=True)
@@ -145,12 +165,13 @@ if st.session_state.page == "タイトル":
                 '<p class="card-text">犬の画像を素材に、AIが特徴を拾って判定する流れを体験。途中の“考え方”も見ていきます。</p>',
                 unsafe_allow_html=True,
             )
-            st.markdown('<div class="btn-secondary">', unsafe_allow_html=True)
+            st.markdown('<div class="btn-secondary btn-same-height">', unsafe_allow_html=True)
             st.button("📷  画像分類を体験する", on_click=go_to, args=("画像分類イントロ",), use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown('<hr class="soft-divider">', unsafe_allow_html=True)
 
+        # 補足
         col_c, col_d, col_e = st.columns([1, 1, 1], gap="large")
         with col_c:
             st.markdown('<div class="label-chip">⚡ 体験の流れ</div>', unsafe_allow_html=True)
