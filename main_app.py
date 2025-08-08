@@ -13,7 +13,7 @@ def go_to(page):
     st.session_state.page = page
 
 # ======================
-# スタイル（明るめ配色＋ボタン高さ完全統一／中央白四角削除）
+# スタイル（明るめ配色＋ボタン高さ完全統一／白四角なし）
 # ======================
 st.markdown("""
 <style>
@@ -29,32 +29,16 @@ st.markdown("""
   max-width: 1100px;
 }
 
-/* glassカード削除 → 背景透明にして枠・影も消去 */
-.glass {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
+/* glassカード（無効化して白い帯を出さない） */
+.glass { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
 
 /* タイトル */
-h1.title {
-  color: #0f172a;
-  font-weight: 800;
-  letter-spacing: .02em;
-  text-align: center;
-  margin-bottom: .2rem;
-}
+h1.title { color: #0f172a; font-weight: 800; letter-spacing: .02em; text-align: center; margin-bottom: .2rem; }
 
 /* サブタイトル */
-p.subtitle {
-  color: #334155;
-  text-align: center;
-  margin: 0 0 1.6rem 0;
-  font-size: 1.05rem;
-}
+p.subtitle { color: #334155; text-align: center; margin: 0 0 1.6rem 0; font-size: 1.05rem; }
 
-/* ボタン共通 */
+/* --- ボタン（基準スタイル） --- */
 .stButton > button {
   background: linear-gradient(135deg, #38bdf8, #0ea5e9);
   color: #ffffff;
@@ -64,6 +48,8 @@ p.subtitle {
   font-size: 1rem;
   box-shadow: 0 4px 12px rgba(14,165,233,0.3);
   transition: all .15s ease;
+
+  /* 高さ・中央揃えを固定 */
   height: 64px !important;
   min-height: 64px !important;
   max-height: 64px !important;
@@ -74,26 +60,26 @@ p.subtitle {
   line-height: 1 !important;
   gap: .5rem !important;
 }
-.stButton > button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(14,165,233,0.4);
-}
-.stButton > button:active {
-  transform: translateY(0);
-}
+.stButton > button:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(14,165,233,0.4); }
+.stButton > button:active { transform: translateY(0); }
 
-/* セカンダリ（右のボタン） */
+/* --- セカンダリ（グレー系）。高さ/中央揃えも完全一致させる --- */
 .btn-secondary .stButton > button {
   background: linear-gradient(135deg, #94a3b8, #64748b) !important;
   color: #ffffff !important;
+
   height: 64px !important;
   min-height: 64px !important;
   max-height: 64px !important;
   padding: 0 1.2rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   line-height: 1 !important;
+  gap: .5rem !important;
 }
 
-/* 同じ高さ揃え */
+/* ユーティリティ：ボタン高さをさらに明示（保険） */
 .btn-same-height .stButton > button {
   height: 64px !important;
   min-height: 64px !important;
@@ -114,7 +100,7 @@ p.subtitle {
   margin-bottom: .3rem;
 }
 
-/* カード内テキスト */
+/* テキスト */
 .card-title { color: #0f172a; font-weight: 700; margin-bottom: .3rem; }
 .card-text  { color: #334155; font-size: 0.95rem; line-height: 1.5; }
 </style>
