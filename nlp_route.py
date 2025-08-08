@@ -47,7 +47,7 @@ def nlp_pages():
 </div>
 <br>
 <div class="card-text" style="font-size:1.05rem; line-height:1.9;">
-今回は AI アシスタントに質問をして、<b>AIがどのように言葉を捉えて答えを作るのか</b>を体験してみましょう。
+今回は AI に質問をして、<b>AIの文章生成の裏側</b>を体験してみましょう。
 </div>
 """,
             unsafe_allow_html=True,
