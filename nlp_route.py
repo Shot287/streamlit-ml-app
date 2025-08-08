@@ -55,24 +55,59 @@ def nlp_pages():
 
         st.markdown("<div style='height:0.6rem;'></div>", unsafe_allow_html=True)
 
-        # ▼ ボタンはどちらも素の st.button を使う（共通CSSだけ当てる）
         col1, col2 = st.columns([1, 1], gap="large")
         with col1:
             st.button("▶  体験スタート", on_click=go_to, args=("自然言語処理体験",), use_container_width=True)
         with col2:
             st.button("←  タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 1-2: 自然言語処理体験
+    # 1-2: 自然言語処理体験（選択画面をカード風に）
     elif st.session_state.page == "自然言語処理体験":
         st.header("AIアシスタントへの質問")
 
+        # --- カード風ラジオのCSS ---
+        st.markdown("""
+        <style>
+        div[role='radiogroup'] > label {
+            background: white;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.6rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        div[role='radiogroup'] > label:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 4px 12px rgba(56,189,248,0.2);
+            transform: translateY(-1px);
+        }
+        div[role='radiogroup'] > label[data-selected="true"] {
+            border-color: #0ea5e9;
+            background: #f0f9ff;
+            box-shadow: 0 4px 14px rgba(14,165,233,0.25);
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
         if st.session_state.nlp_stage == "selection":
             st.write("こんにちは！ 私はAIアシスタントです。AIや言葉について、どんなことに興味がありますか？下のリストから質問を選んでください。")
-            st.radio("質問リスト:", range(len(questions)), format_func=lambda i: questions[i], label_visibility="collapsed", key="selected_nlp_radio_index")
+
+            st.radio(
+                "質問リスト:",
+                range(len(questions)),
+                format_func=lambda i: questions[i],
+                label_visibility="collapsed",
+                key="selected_nlp_radio_index"
+            )
+
             def decide_button_clicked():
                 st.session_state.selected_nlp_question_index = st.session_state.selected_nlp_radio_index
                 st.session_state.nlp_stage = "animation"
-            st.button("決定", on_click=decide_button_clicked)
+
+            st.markdown("<div style='margin-top:1rem;'></div>", unsafe_allow_html=True)
+            st.button("✅  この質問で決定", on_click=decide_button_clicked, use_container_width=True)
 
         elif st.session_state.nlp_stage == "animation":
             st.info(f"**質問:**\n\n{questions[st.session_state.selected_nlp_question_index]}")
