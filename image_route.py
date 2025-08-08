@@ -11,7 +11,7 @@ def go_to(page):
     st.session_state.page = page
 
 def image_pages():
-    # 2-1: 画像分類イントロ（既存・軽整形）
+    # 2-1: 画像分類イントロ
     if st.session_state.page == "画像分類イントロ":
         st.markdown('<div class="label-chip">👀 画像を見るAI</div>', unsafe_allow_html=True)
         st.header("画像分類（Vision）とは？")
@@ -36,61 +36,61 @@ def image_pages():
         with col2:
             st.button("←  タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 2-2: 画像分類体験（★カード風に・st.imageで確実表示）
+    # 2-2: 画像分類体験（カード＋ボタンで確実に選択）
     elif st.session_state.page == "画像分類体験":
         st.header("画像分類を体験しよう！")
-        st.write("下の6枚から1つ選んで「決定」を押してください。ホバーでプレビューがふわっと浮きます。")
+        st.write("下の6枚から1つ選んで「この画像で決定」を押してください。ホバーでふわっと浮きます。")
 
         image_paths = [
             "selectable_1.webp", "selectable_2.png", "selectable_3.png",
             "selectable_4.png", "selectable_5.png", "selectable_6.png"
         ]
-        options = [f"画像{i+1}" for i in range(len(image_paths))]
+        labels = [f"画像{i+1}" for i in range(len(image_paths))]
 
-        def set_selection_and_navigate():
-            selected_option = st.session_state.radio_selector
-            idx = options.index(selected_option)
-            st.session_state.selected_index = idx
-            st.session_state.page = "画像分類アニメ"
-
-        # --- CSS: st.image にカード風スタイルを適用 ---
+        # --- CSS: st.image をカード風に（角丸・影・ホバー演出） ---
         st.markdown("""
         <style>
-        /* 画像カードの見た目（角丸・影・ホバーで拡大） */
-        div[data-testid="stImage"] img {
+        /* 画像のカード化 */
+        .card-wrap {
+            background: #ffffff;
             border-radius: 14px;
+            padding: 10px;
             border: 2px solid transparent;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             transition: transform .18s ease, box-shadow .2s ease, border-color .2s ease;
         }
-        div[data-testid="stImage"]:hover img {
+        .card-wrap:hover {
             transform: translateY(-2px) scale(1.02);
             box-shadow: 0 10px 24px rgba(0,0,0,0.12);
             border-color: rgba(20,184,166,0.55); /* ティール系アクセント */
         }
         .thumb-label {
             text-align: center;
-            padding-top: .35rem;
+            padding: .35rem 0 .2rem 0;
             font-weight: 700;
             color: #0f172a;
         }
         </style>
         """, unsafe_allow_html=True)
 
-        # 3カラム×2段のグリッドで表示（st.image を使用）
+        # 3×2 グリッド
         cols = st.columns(3, gap="large")
-        for i, path in enumerate(image_paths):
-            col = cols[i % 3]
-            with col:
+        for i, (path, label) in enumerate(zip(image_paths, labels)):
+            with cols[i % 3]:
+                st.markdown('<div class="card-wrap">', unsafe_allow_html=True)
                 if os.path.exists(path):
                     st.image(path, use_container_width=True)
-                    st.markdown(f"<div class='thumb-label'>{options[i]}</div>", unsafe_allow_html=True)
                 else:
                     st.error(f"エラー: '{path}' が見つかりません。")
+                st.markdown(f"<div class='thumb-label'>{label}</div>", unsafe_allow_html=True)
 
-        st.divider()
-        st.radio("分析したい画像を1枚選んでください：", options, key="radio_selector", horizontal=True)
-        st.button("✅  この画像で決定", on_click=set_selection_and_navigate, use_container_width=True)
+                # 画像ごとの選択ボタン（押したら即選択してアニメへ）
+                if st.button(f"この画像を選ぶ", key=f"pick_{i}", use_container_width=True):
+                    st.session_state.selected_index = i
+                    st.session_state.page = "画像分類アニメ"
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+
         st.divider()
         colb1, colb2 = st.columns(2)
         with colb1:
@@ -98,7 +98,7 @@ def image_pages():
         with colb2:
             st.button("🏠  タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 2-3: 画像分類アニメ（既存）
+    # 2-3: 画像分類アニメ
     elif st.session_state.page == "画像分類アニメ":
         st.header("AIが画像を分析中...")
         progress_bar = st.progress(0, "AIが画像の特徴を調べています...")
@@ -114,7 +114,7 @@ def image_pages():
 
         st.button("結果を見る", on_click=navigate_to_result, use_container_width=True)
 
-    # 2-5: 画像分類まとめ（既存）
+    # 2-5: 画像分類まとめ
     elif st.session_state.page == "画像分類まとめ":
         st.header("画像分類まとめ")
         st.success("体験お疲れ様でした！")
@@ -124,7 +124,7 @@ def image_pages():
         st.button("もう一度体験する", on_click=go_to, args=("画像分類体験",), use_container_width=True)
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 2-6: 追加ページ1（既存）
+    # 2-6: 追加ページ1
     elif st.session_state.page == "画像分類追加_1":
         st.header("解説 1/3")
         path = "extra_1.png"
@@ -134,7 +134,7 @@ def image_pages():
             st.error(f"エラー: 画像ファイル '{path}' が見つかりません。")
         st.button("次へ ▶", on_click=go_to, args=("画像分類追加_2",), use_container_width=True)
 
-    # 2-7: 追加ページ2（既存）
+    # 2-7: 追加ページ2
     elif st.session_state.page == "画像分類追加_2":
         st.header("解説 2/3")
         path = "extra_2.png"
@@ -148,7 +148,7 @@ def image_pages():
         with col2:
             st.button("次へ ▶", on_click=go_to, args=("画像分類追加_3",), use_container_width=True)
 
-    # 2-8: 追加ページ3（既存）
+    # 2-8: 追加ページ3
     elif st.session_state.page == "画像分類追加_3":
         st.header("解説 3/3")
         path = "extra_3.png"
