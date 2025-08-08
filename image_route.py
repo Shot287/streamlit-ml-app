@@ -36,64 +36,76 @@ def image_pages():
         with col2:
             st.button("←  タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 2-2: 画像分類体験
+    # 2-2: 画像分類体験（6枚が1画面に収まるレイアウト）
     elif st.session_state.page == "画像分類体験":
         st.header("画像分類を体験しよう！")
-        st.write("下の6枚から1つ選んで「この画像で決定」を押してください。ホバーでふわっと浮きます。")
+        st.write("下の6枚から1つ選び、「決定」を押してください。")
 
         image_paths = [
             "selectable_1.webp", "selectable_2.png", "selectable_3.png",
             "selectable_4.png", "selectable_5.png", "selectable_6.png"
         ]
-        labels = [f"画像{i+1}" for i in range(len(image_paths))]
+        options = [f"画像{i+1}" for i in range(len(image_paths))]
 
-        # --- CSS: 背景完全透明化＋ホバー演出 ---
+        # --- CSS: サムネ固定高・余白圧縮・白四角除去 ---
         st.markdown("""
         <style>
-        /* カード全体 */
-        .card-wrap {
-            background: transparent !important;
-            border-radius: 14px;
-            padding: 10px;
+        /* 画像の親要素(白帯対策)を透明に */
+        div[data-testid="stImage"] { background: transparent !important; padding: 0 !important; margin: 0 !important; }
+
+        /* サムネイル：固定高さで全体が1画面に収まるように */
+        div[data-testid="stImage"] img {
+            width: 100% !important;
+            height: 170px !important;       /* ← ここで高さを調整（必要なら160〜180で微調整） */
+            object-fit: cover !important;    /* 収まり優先でトリミング */
+            border-radius: 12px;
             border: 2px solid transparent;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            transition: transform .18s ease, box-shadow .2s ease, border-color .2s ease;
+            transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease;
         }
-        .card-wrap:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+        div[data-testid="stImage"]:hover img {
+            transform: translateY(-1px) scale(1.01);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
             border-color: rgba(20,184,166,0.55);
         }
-        /* st.imageの親要素背景を透明に */
-        div[data-testid="stImage"] {
-            background: transparent !important;
-            padding: 0 !important;
-        }
+
+        /* カード下のラベル */
         .thumb-label {
             text-align: center;
-            padding: .35rem 0 .2rem 0;
+            padding: .25rem 0 .2rem 0;
             font-weight: 700;
+            font-size: 0.92rem;
             color: #0f172a;
+            margin-bottom: .15rem;
         }
+
+        /* グリッドの間隔を少しだけ詰める */
+        .grid-col { padding-right: 8px !important; padding-left: 8px !important; }
         </style>
         """, unsafe_allow_html=True)
 
-        # 3×2 グリッド表示
-        cols = st.columns(3, gap="large")
-        for i, (path, label) in enumerate(zip(image_paths, labels)):
+        # 3x2 グリッド（幅に応じて自動で2列→1列に崩れる）
+        cols = st.columns(3, gap="small")
+        for i, path in enumerate(image_paths):
             with cols[i % 3]:
-                st.markdown('<div class="card-wrap">', unsafe_allow_html=True)
+                # 余白調整のためのラッパ（クラスはCSSヒント用）
+                st.markdown('<div class="grid-col">', unsafe_allow_html=True)
                 if os.path.exists(path):
                     st.image(path, use_container_width=True)
                 else:
                     st.error(f"エラー: '{path}' が見つかりません。")
-                st.markdown(f"<div class='thumb-label'>{label}</div>", unsafe_allow_html=True)
-
-                if st.button(f"この画像を選ぶ", key=f"pick_{i}", use_container_width=True):
-                    st.session_state.selected_index = i
-                    st.session_state.page = "画像分類アニメ"
-                    st.rerun()
+                st.markdown(f"<div class='thumb-label'>{options[i]}</div>", unsafe_allow_html=True)
                 st.markdown('</div>', unsafe_allow_html=True)
+
+        # 画面下に選択UIをまとめる（高さ節約）
+        st.radio("分析したい画像を選んでください：", options, key="radio_selector", horizontal=True)
+
+        def _decide():
+            idx = options.index(st.session_state.radio_selector)
+            st.session_state.selected_index = idx
+            st.session_state.page = "画像分類アニメ"
+
+        st.button("✅  決定", on_click=_decide, use_container_width=True)
 
         st.divider()
         colb1, colb2 = st.columns(2)
@@ -166,7 +178,7 @@ def image_pages():
         with col2:
             st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 2-4: 各結果ページ
+    # 2-4: 各結果ページ（スライドショー）
     for choice_idx in range(1, 7):
         for page_num in range(1, 6):
             page_name = f"画像分類結果_{choice_idx}_{page_num}"
