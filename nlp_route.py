@@ -34,17 +34,40 @@ def nlp_pages():
         "AIと対話することで、知識を調べたり、英語の練習をしたり、プログラミングのサポートを受けたりできます。自分の考えを言語化して整理したいときや、新しい発想がほしいときにもAIは役立ちます。また、趣味や興味に合わせて質問すれば、今まで知らなかった情報や学びに出会えるのも魅力のひとつです。"
     ]
 
-    # 1-1: 自然言語処理イントロ
+    # 1-1: 自然言語処理イントロ（整形済み）
     if st.session_state.page == "自然言語処理イントロ":
-        st.header("自然言語処理とは？")
-        st.write("""
-        自然言語処理（NLP）は、人間の言葉（自然言語）をコンピュータが理解・分析するAI技術です。
-        文章の意味を読み取ったり、要約や翻訳をしたりと、様々な場面で活躍しています。
-        今回はAIアシスタントに質問をして、その技術の一端を体験してみましょう。
-        """)
-        st.button("体験スタート", on_click=go_to, args=("自然言語処理体験",))
-        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
-        st.markdown("<div style='text-align:center;'>1-1</div>", unsafe_allow_html=True)
+        # ラベルチップ
+        st.markdown('<div class="label-chip">🧠 言葉を理解するAI</div>', unsafe_allow_html=True)
+
+        # 見出し
+        st.header("自然言語処理（NLP）とは？")
+
+        # 本文（行間と読みやすさを意識して2段落）
+        st.markdown(
+            """
+<div class="card-text" style="font-size:1.05rem; line-height:1.9;">
+自然言語処理（NLP）は、人間の言葉（自然言語）をコンピュータが理解・分析するAI技術です。  
+文章の意味を読み取ったり、要約や翻訳をしたりと、さまざまな場面で活躍しています。
+</div>
+<br>
+<div class="card-text" style="font-size:1.05rem; line-height:1.9;">
+今回は AI アシスタントに質問をして、<b>AIがどのように言葉を捉えて答えを作るのか</b>を体験してみましょう。
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+
+        st.markdown("<div style='height:0.6rem;'></div>", unsafe_allow_html=True)
+
+        # ボタンを横並び・同幅で配置
+        col1, col2 = st.columns([1, 1], gap="large")
+        with col1:
+            st.button("▶  体験スタート", on_click=go_to, args=("自然言語処理体験",), use_container_width=True)
+        with col2:
+            # セカンダリ配色（main_appのCSSが適用されます）
+            st.markdown('<div class="btn-secondary">', unsafe_allow_html=True)
+            st.button("←  タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
     # 1-2: 自然言語処理体験
     elif st.session_state.page == "自然言語処理体験":
@@ -80,17 +103,15 @@ def nlp_pages():
             st.button("結果を見る", on_click=navigate_to_result, use_container_width=True)
 
         st.divider()
-        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
-        st.markdown("<div style='text-align:center;'>1-2</div>", unsafe_allow_html=True)
+        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
     # 「まとめ」のブロックをforループの前に移動
     elif st.session_state.page == "自然言語処理まとめ":
         st.header("自然言語処理まとめ")
         st.success("体験お疲れ様でした！")
         st.write("（まとめページの内容）")
-        st.button("もう一度体験する", on_click=go_to, args=("自然言語処理体験",))
-        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
-        st.markdown("<div style='text-align:center;'>1-4</div>", unsafe_allow_html=True)
+        st.button("もう一度体験する", on_click=go_to, args=("自然言語処理体験",), use_container_width=True)
+        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
     # 1-3: 各結果ページの生成
     for i in range(1, 7):
@@ -99,10 +120,9 @@ def nlp_pages():
             st.header(f"質問{i}への回答")
             st.info(answers[i-1])
             st.divider()
-            st.button("AIの裏側を見る。", on_click=go_to, args=(f"自然言語処理_裏側_{i}",))
-            st.button("もう一度質問を選ぶ", on_click=go_to, args=("自然言語処理体験",))
-            st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
-            st.markdown(f"<div style='text-align:center;'>1-3-{i}</div>", unsafe_allow_html=True)
+            st.button("AIの裏側を見る。", on_click=go_to, args=(f"自然言語処理_裏側_{i}",), use_container_width=True)
+            st.button("もう一度質問を選ぶ", on_click=go_to, args=("自然言語処理体験",), use_container_width=True)
+            st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
             return
 
     # 1-5: 新しい「裏側」ページの生成
@@ -121,17 +141,12 @@ def nlp_pages():
             ]
             path = backside_image_paths[i-1]
 
-            # ▼▼▼ 変更点 ▼▼▼
-            # デバッグ情報を削除
-            # ▲▲▲ 変更点ここまで ▲▲▲
-
             if os.path.exists(path):
                 st.image(path, caption="解説画像", use_container_width=True)
             else:
                 st.error(f"エラー: 解説画像 '{path}' が見つかりません。")
             
             st.divider()
-            st.button("◀ 回答に戻る", on_click=go_to, args=(f"自然言語処理結果_{i}",))
-            st.button("タイトルに戻る", on_click=go_to, args=("タイトル",))
-            st.markdown(f"<div style='text-align:center;'>1-5-{i}</div>", unsafe_allow_html=True)
+            st.button("◀ 回答に戻る", on_click=go_to, args=(f"自然言語処理結果_{i}",), use_container_width=True)
+            st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
             return
