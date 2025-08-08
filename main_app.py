@@ -117,13 +117,6 @@ p.subtitle {
 /* カード内テキスト */
 .card-title { color: #0f172a; font-weight: 700; margin-bottom: .3rem; }
 .card-text  { color: #334155; font-size: 0.95rem; line-height: 1.5; }
-
-/* 区切り線 */
-hr.soft-divider {
-  border: none;
-  border-top: 1px solid rgba(148,163,184,0.25);
-  margin: 1.1rem 0 1.4rem 0;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -132,7 +125,6 @@ if st.session_state.page == "タイトル":
     st.markdown('<h1 class="title">AIの裏側体験</h1>', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">高校生向けに、AIがどう考え・どう見ているのかを直感的に体験できます。</p>', unsafe_allow_html=True)
 
-    # 白い四角を削除しつつレイアウト維持
     with st.container():
         col_a, col_b = st.columns([1, 1], gap="large")
 
@@ -157,19 +149,6 @@ if st.session_state.page == "タイトル":
             st.markdown('<div class="btn-secondary btn-same-height">', unsafe_allow_html=True)
             st.button("📷  画像分類を体験する", on_click=go_to, args=("画像分類イントロ",), use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown('<hr class="soft-divider">', unsafe_allow_html=True)
-
-        col_c, col_d, col_e = st.columns([1, 1, 1], gap="large")
-        with col_c:
-            st.markdown('<div class="label-chip">⚡ 体験の流れ</div>', unsafe_allow_html=True)
-            st.markdown('<p class="card-text">選ぶ → 待つ → 見る。“裏側”はスライドで解説。</p>', unsafe_allow_html=True)
-        with col_d:
-            st.markdown('<div class="label-chip">🧩 必要な準備</div>', unsafe_allow_html=True)
-            st.markdown('<p class="card-text">ブラウザのみ。展示では固定画像を使用します。</p>', unsafe_allow_html=True)
-        with col_e:
-            st.markdown('<div class="label-chip">🎯 ねらい</div>', unsafe_allow_html=True)
-            st.markdown('<p class="card-text">AIの強み/限界をイメージで掴む。</p>', unsafe_allow_html=True)
 
 elif st.session_state.page.startswith("自然言語処理"):
     nlp_pages()
