@@ -4,13 +4,16 @@ import os
 import time
 from PIL import Image
 
-# --- セッション管理の初期化 ---
-if "selected_index" not in st.session_state:
-    st.session_state.selected_index = 0
-if "scrolled_to_analyze" not in st.session_state:
-    st.session_state.scrolled_to_analyze = False   # アニメページでの一度きりスクロール制御
-if "last_scrolled_page" not in st.session_state:
-    st.session_state.last_scrolled_page = ""       # 結果ページでの1回スクロール制御
+def _ss_get(key, default):
+    """Session State を安全に取得（なければ初期化して返す）"""
+    if key not in st.session_state:
+        st.session_state[key] = default
+    return st.session_state[key]
+
+# --- セッション管理の安全初期化 ---
+_ = _ss_get("selected_index", 0)
+_ = _ss_get("scrolled_to_analyze", False)   # アニメページ用スクロールフラグ
+_ = _ss_get("last_scrolled_page", "")       # 結果ページのスクロール制御
 
 def go_to(page):
     st.session_state.page = page
@@ -115,11 +118,9 @@ AIがどのように画像の特徴を見つけ出し、犬種を判定するの
 
     # 2-3: 画像分類アニメ（到達時に自動スクロール）
     elif st.session_state.page == "画像分類アニメ":
-        # スクロール先アンカー
         st.markdown("<div id='analyze-anchor'></div>", unsafe_allow_html=True)
 
-        # 初回だけ強制スクロール（ページ遷移直後に実行）
-        if not st.session_state.scrolled_to_analyze:
+        if not _ss_get("scrolled_to_analyze", False):
             components.html(
                 """
                 <script>
@@ -202,9 +203,10 @@ AIがどのように画像の特徴を見つけ出し、犬種を判定するの
         for page_num in range(1, 6):
             page_name = f"画像分類結果_{choice_idx}_{page_num}"
             if st.session_state.page == page_name:
-                # --- ここでトップへ自動スクロール（同じページで何度もは実行しない） ---
+                # --- トップへ自動スクロール（未実行なら） ---
+                last = _ss_get("last_scrolled_page", "")
                 st.markdown("<div id='result-top'></div>", unsafe_allow_html=True)
-                if st.session_state.last_scrolled_page != page_name:
+                if last != page_name:
                     components.html(
                         """
                         <script>
@@ -212,7 +214,6 @@ AIがどのように画像の特徴を見つけ出し、犬種を判定するの
                           const doc = window.parent?.document || document;
                           const el = doc.getElementById('result-top');
                           if (el) el.scrollIntoView({behavior:'instant', block:'start'});
-                          // instant が合わなければ 'smooth' に変更可
                         };
                         setTimeout(goTop, 60);
                         </script>
