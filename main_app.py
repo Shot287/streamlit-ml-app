@@ -111,7 +111,7 @@ p.subtitle { color: #334155; text-align: center; margin: 0 0 1.6rem 0; font-size
 # --- ページルーティング ---
 if st.session_state.page == "タイトル":
     st.markdown('<h1 class="title">AIの裏側体験</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="subtitle">高校生向けに、AIがどう考え・どう見ているのかを直感的に体験できます。</p>', unsafe_allow_html=True)
+    st.markdown('<p class="subtitle">AIがどう考え・どう見ているのかを直感的に体験できます。</p>', unsafe_allow_html=True)
 
     with st.container():
         col_a, col_b = st.columns([1, 1], gap="large")
@@ -120,7 +120,7 @@ if st.session_state.page == "タイトル":
             st.markdown('<div class="label-chip">🧠 言葉を理解するAI</div>', unsafe_allow_html=True)
             st.markdown('<h3 class="card-title">自然言語処理（NLP）</h3>', unsafe_allow_html=True)
             st.markdown(
-                '<p class="card-text">質問に答えたり要約したり。AIが「言葉」をどう分解し、意味を推測しているのかを体験します。</p>',
+                '<p class="card-text">AIの文章生成の裏側の一部を体験できます。</p>',
                 unsafe_allow_html=True,
             )
             st.markdown('<div class="btn-same-height">', unsafe_allow_html=True)
@@ -131,7 +131,7 @@ if st.session_state.page == "タイトル":
             st.markdown('<div class="label-chip">👀 画像を見るAI</div>', unsafe_allow_html=True)
             st.markdown('<h3 class="card-title">画像分類（Vision）</h3>', unsafe_allow_html=True)
             st.markdown(
-                '<p class="card-text">犬の画像を素材に、AIが特徴を拾って判定する流れを体験。途中の“考え方”も見ていきます。</p>',
+                '<p class="card-text">AIの犬種判別の裏側の一部を体験できます。</p>',
                 unsafe_allow_html=True,
             )
             st.markdown('<div class="btn-secondary btn-same-height">', unsafe_allow_html=True)
