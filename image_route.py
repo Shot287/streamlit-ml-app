@@ -19,7 +19,7 @@ def image_pages():
             """
 <div class="card-text" style="font-size:1.05rem; line-height:1.9;">
 画像分類とは、画像の中に「何が写っているか」をAIが判別する技術です。  
-　たとえば、動物の写真から種類を当てたり、商品の写真からカテゴリを分類したりと、さまざまな分野で活用されています。
+ たとえば、動物の写真から種類を当てたり、商品の写真からカテゴリを分類したりと、さまざまな分野で活用されています。
 </div>
 <br>
 <div class="card-text" style="font-size:1.05rem; line-height:1.9;">
