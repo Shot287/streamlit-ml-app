@@ -13,7 +13,7 @@ def go_to(page):
     st.session_state.page = page
 
 # ======================
-# スタイル（明るめ配色）
+# スタイル（明るめ配色＋ボタン高さ統一）
 # ======================
 st.markdown("""
 <style>
@@ -66,6 +66,10 @@ p.subtitle {
   font-size: 1rem;
   box-shadow: 0 4px 12px rgba(14,165,233,0.3);
   transition: all .15s ease;
+  height: 60px;                  /* ★ 高さ固定 */
+  display: flex;                 /* ★ 中央揃え */
+  align-items: center;           /* ★ 縦中央 */
+  justify-content: center;       /* ★ 横中央 */
 }
 .stButton > button:hover {
   transform: translateY(-1px);
@@ -118,11 +122,9 @@ hr.soft-divider {
 
 # --- ページルーティング ---
 if st.session_state.page == "タイトル":
-    # タイトルと説明
     st.markdown('<h1 class="title">AIの裏側体験</h1>', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">高校生向けに、AIがどう考え・どう見ているのかを直感的に体験できます。</p>', unsafe_allow_html=True)
 
-    # 概要カード
     with st.container():
         st.markdown('<div class="glass">', unsafe_allow_html=True)
         col_a, col_b = st.columns([1, 1], gap="large")
@@ -149,7 +151,6 @@ if st.session_state.page == "タイトル":
 
         st.markdown('<hr class="soft-divider">', unsafe_allow_html=True)
 
-        # 補足
         col_c, col_d, col_e = st.columns([1, 1, 1], gap="large")
         with col_c:
             st.markdown('<div class="label-chip">⚡ 体験の流れ</div>', unsafe_allow_html=True)
