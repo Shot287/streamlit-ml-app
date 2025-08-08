@@ -18,8 +18,8 @@ def image_pages():
         st.markdown(
             """
 <div class="card-text" style="font-size:1.05rem; line-height:1.9;">
-画像分類とは、画像の内容を AI が判別する技術です。  
-「犬の写真を見せて“犬”と答える」など、さまざまな分野で使われています。
+画像分類とは、画像の中に「何が写っているか」をAIが判別する技術です。  
+　たとえば、動物の写真から種類を当てたり、商品の写真からカテゴリを分類したりと、さまざまな分野で活用されています。
 </div>
 <br>
 <div class="card-text" style="font-size:1.05rem; line-height:1.9;">
