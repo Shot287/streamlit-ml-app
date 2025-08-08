@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import os
 import time
 from PIL import Image
@@ -6,9 +7,14 @@ from PIL import Image
 # --- セッション管理の初期化 ---
 if "selected_index" not in st.session_state:
     st.session_state.selected_index = 0
+if "scrolled_to_analyze" not in st.session_state:
+    st.session_state.scrolled_to_analyze = False  # アニメページでの一度きりスクロール制御
 
 def go_to(page):
     st.session_state.page = page
+    # ページが変わるたびにスクロールフラグはリセット
+    if page != "画像分類アニメ":
+        st.session_state.scrolled_to_analyze = False
 
 def image_pages():
     # 2-1: 画像分類イントロ
@@ -19,11 +25,12 @@ def image_pages():
             """
 <div class="card-text" style="font-size:1.05rem; line-height:1.9;">
 画像分類とは、画像の中に「何が写っているか」をAIが判別する技術です。  
- たとえば、動物の写真から種類を当てたり、商品の写真からカテゴリを分類したりと、さまざまな分野で活用されています。
+たとえば、動物の写真から種類を当てたり、商品の写真からカテゴリを分類したりと、さまざまな分野で活用されています。
 </div>
 <br>
 <div class="card-text" style="font-size:1.05rem; line-height:1.9;">
-今回の体験では、 <b>6枚の犬の画像</b> から1枚を選び、AIがその犬種を推測します。
+今回の体験では、<b>6枚の犬の画像</b>から1枚を選び、AIがその犬種を推測します。  
+AIがどのように画像の特徴を見つけ出し、犬種を判定するのか、その過程も一緒に見ていきましょう。
 </div>
 """,
             unsafe_allow_html=True,
@@ -47,17 +54,14 @@ def image_pages():
         ]
         options = [f"画像{i+1}" for i in range(len(image_paths))]
 
-        # --- CSS: サムネ固定高・余白圧縮・白四角除去 ---
+        # --- CSS: サムネ固定高・白帯除去・余白圧縮 ---
         st.markdown("""
         <style>
-        /* 画像の親要素(白帯対策)を透明に */
         div[data-testid="stImage"] { background: transparent !important; padding: 0 !important; margin: 0 !important; }
-
-        /* サムネイル：固定高さで全体が1画面に収まるように */
         div[data-testid="stImage"] img {
             width: 100% !important;
-            height: 170px !important;       /* ← ここで高さを調整（必要なら160〜180で微調整） */
-            object-fit: cover !important;    /* 収まり優先でトリミング */
+            height: 170px !important;       /* 必要なら 160〜180 で微調整 */
+            object-fit: cover !important;
             border-radius: 12px;
             border: 2px solid transparent;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -68,8 +72,6 @@ def image_pages():
             box-shadow: 0 8px 18px rgba(0,0,0,0.12);
             border-color: rgba(20,184,166,0.55);
         }
-
-        /* カード下のラベル */
         .thumb-label {
             text-align: center;
             padding: .25rem 0 .2rem 0;
@@ -78,17 +80,13 @@ def image_pages():
             color: #0f172a;
             margin-bottom: .15rem;
         }
-
-        /* グリッドの間隔を少しだけ詰める */
         .grid-col { padding-right: 8px !important; padding-left: 8px !important; }
         </style>
         """, unsafe_allow_html=True)
 
-        # 3x2 グリッド（幅に応じて自動で2列→1列に崩れる）
         cols = st.columns(3, gap="small")
         for i, path in enumerate(image_paths):
             with cols[i % 3]:
-                # 余白調整のためのラッパ（クラスはCSSヒント用）
                 st.markdown('<div class="grid-col">', unsafe_allow_html=True)
                 if os.path.exists(path):
                     st.image(path, use_container_width=True)
@@ -97,7 +95,6 @@ def image_pages():
                 st.markdown(f"<div class='thumb-label'>{options[i]}</div>", unsafe_allow_html=True)
                 st.markdown('</div>', unsafe_allow_html=True)
 
-        # 画面下に選択UIをまとめる（高さ節約）
         st.radio("分析したい画像を選んでください：", options, key="radio_selector", horizontal=True)
 
         def _decide():
@@ -114,8 +111,30 @@ def image_pages():
         with colb2:
             st.button("🏠  タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 2-3: 画像分類アニメ
+    # 2-3: 画像分類アニメ（到達時に自動スクロール）
     elif st.session_state.page == "画像分類アニメ":
+        # スクロール先アンカー
+        st.markdown("<div id='analyze-anchor'></div>", unsafe_allow_html=True)
+
+        # 初回だけ強制スクロール（ページ遷移直後に実行）
+        if not st.session_state.scrolled_to_analyze:
+            components.html(
+                """
+                <script>
+                const go = () => {
+                  const el = window.parent?.document?.getElementById('analyze-anchor') || document.getElementById('analyze-anchor');
+                  if (el) {
+                    el.scrollIntoView({behavior: 'smooth', block: 'start'});
+                  }
+                };
+                // 少し待ってからスクロール（描画完了待ち）
+                setTimeout(go, 100);
+                </script>
+                """,
+                height=0, width=0
+            )
+            st.session_state.scrolled_to_analyze = True
+
         st.header("AIが画像を分析中...")
         progress_bar = st.progress(0, "AIが画像の特徴を調べています...")
         for i in range(100):
