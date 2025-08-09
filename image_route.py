@@ -149,53 +149,29 @@ AIがどのように画像の特徴を見つけ出し、犬種を判定するの
 
         st.button("結果を見る", on_click=navigate_to_result, use_container_width=True)
 
-    # 2-5: 画像分類まとめ
+    # 2-5: 画像分類まとめ（→ 直接「解説」1ページへ）
     elif st.session_state.page == "画像分類まとめ":
         st.header("画像分類まとめ")
         st.success("体験お疲れ様でした！")
         st.write("今回は、AIが犬の画像を見分ける体験をしました。")
-        st.button("最後の解説へ ▶", on_click=go_to, args=("画像分類追加_1",), use_container_width=True)
+        # ここを 画像分類追加_1 → 画像分類追加_3 に変更
+        st.button("最後の解説へ ▶", on_click=go_to, args=("画像分類追加_3",), use_container_width=True)
         st.divider()
         st.button("もう一度体験する", on_click=go_to, args=("画像分類体験",), use_container_width=True)
         st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
-    # 2-6: 追加ページ1
-    elif st.session_state.page == "画像分類追加_1":
-        st.header("解説 1/3")
-        path = "extra_1.png"
-        if os.path.exists(path):
-            st.image(path, use_container_width=True)
-        else:
-            st.error(f"エラー: 画像ファイル '{path}' が見つかりません。")
-        st.button("次へ ▶", on_click=go_to, args=("画像分類追加_2",), use_container_width=True)
+    # （※ 解説1/3 と 2/3 は削除）
 
-    # 2-7: 追加ページ2
-    elif st.session_state.page == "画像分類追加_2":
-        st.header("解説 2/3")
-        path = "extra_2.png"
-        if os.path.exists(path):
-            st.image(path, use_container_width=True)
-        else:
-            st.error(f"エラー: 画像ファイル '{path}' が見つかりません。")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.button("◀ 戻る", on_click=go_to, args=("画像分類追加_1",), use_container_width=True)
-        with col2:
-            st.button("次へ ▶", on_click=go_to, args=("画像分類追加_3",), use_container_width=True)
-
-    # 2-8: 追加ページ3
+    # 解説（1ページ構成）
     elif st.session_state.page == "画像分類追加_3":
-        st.header("解説 3/3")
+        st.header("解説")
         path = "extra_3.png"
         if os.path.exists(path):
             st.image(path, use_container_width=True)
         else:
             st.error(f"エラー: 画像ファイル '{path}' が見つかりません。")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.button("◀ 戻る", on_click=go_to, args=("画像分類追加_2",), use_container_width=True)
-        with col2:
-            st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
+        # 戻るボタンは不要。タイトルのみ
+        st.button("タイトルに戻る", on_click=go_to, args=("タイトル",), use_container_width=True)
 
     # 2-4: 各結果ページ（スライドショー）
     for choice_idx in range(1, 7):
