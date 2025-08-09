@@ -190,6 +190,7 @@ AIがどのように画像の特徴を見つけ出し、犬種を判定するの
                         next_page = f"画像分類結果_{choice_idx}_{page_num + 1}"
                         st.button("次へ ▶", on_click=go_to, args=(next_page,), use_container_width=True)
                     else:
-                        st.button("まとめへ ▶", on_click=go_to, args=("画像分類まとめ",), use_container_width=True)
+                        # ★ ここを変更：「まとめへ ▶」→「最新の画像認識活用事例」
+                        st.button("🆕 最新の画像認識活用事例", on_click=go_to, args=("画像分類追加_3",), use_container_width=True)
 
                 return
