@@ -30,7 +30,6 @@ def image_pages():
 <br>
 <div class="card-text" style="font-size:1.05rem; line-height:1.9;">
 今回の体験では、<b>6枚の犬の画像</b>から1枚を選び、AIがその犬種を推測します。  
-AIがどのように画像の特徴を見つけ出し、犬種を判定するのか、その過程も一緒に見ていきましょう。
 </div>
 """,
             unsafe_allow_html=True,
